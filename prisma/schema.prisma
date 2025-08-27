@@ -1,0 +1,63 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       String  @id @default(uuid())
+  name     String
+  email    String  @unique
+  password String
+  role     ROLE    @default(USER)
+  status   Boolean @default(false)
+  jwtToken String?
+  access   ACCESS  @default(ACTIVE)
+}
+
+model GoogleUser {
+  id       String     @id @default(uuid())
+  name     String
+  email    String  @unique
+  picture  String
+  role     ROLE    @default(GOOGLEUSER)
+  status   Boolean
+  jwtToken String?
+  access   ACCESS  @default(ACTIVE)
+}
+
+model Token {
+  id          String          @id @default(uuid())
+  token       String
+  tokenType   TOKEN_TYPE
+  tokenStatus TOKEN_STATUS @default(VALIDATE)
+  expiresIn   DateTime
+  email       String
+}
+
+enum ACCESS {
+  ACTIVE
+  INACTIVE
+}
+
+enum TOKEN_TYPE {
+  SIGNUP
+  FORGOT_PASSWORD
+  EMAIL_VERIFICATION
+}
+
+enum TOKEN_STATUS {
+  VALIDATE
+  DELETED
+}
+
+enum ROLE {
+  ADMIN
+  SUBADMIN
+  USER
+  GOOGLEUSER
+}

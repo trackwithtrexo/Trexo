@@ -1,0 +1,29 @@
+export enum Role {
+  ADMIN = "ADMIN",
+  SUBADMIN = "SUBADMIN",
+  USER = "USER",
+  GOOGLEUSER = "GOOGLEUSER",
+}
+
+export enum AccessType {
+  ACTIVE = "ACTIVE",
+  BLOCKED = "BLOCKED",
+}
+
+export enum ProductStatus {
+  ACTIVE = "ACTIVE",
+  INACTIVE = "INACTIVE",
+}
+
+export enum TokenType {
+  SIGNUP = "SIGNUP",
+  FORGOT_PASSWORD = "FORGOT_PASSWORD",
+  EMAIL_VERIFICATION = "EMAIL_VERIFICATION",
+}
+
+export enum EmailType {
+  SIGNUP = "SIGNUP",
+  FORGOT_PASSWORD = "FORGOT_PASSWORD",
+  EMAIL_VERIFICATION = "EMAIL_VERIFICATION",
+  EXPENSE = "EXPENSE",
+}
