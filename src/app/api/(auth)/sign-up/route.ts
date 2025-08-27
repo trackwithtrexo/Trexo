@@ -7,6 +7,7 @@ import { signUpSchema } from "@/validation/authValidation";
 
 export async function POST(req: Request): Promise<Response> {
   try {
+    // Email and Password
     const { email, password, name } = (await req.json()) as SignUp;
 
     signUpSchema.parse({ email, password, name });
