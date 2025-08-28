@@ -60,3 +60,8 @@ export interface SignInInitialState {
   response: responseData;
   token?: string;
 }
+export interface ApiErrorPayload {
+  message?: string;
+  error?: string;
+  code?: string;
+}

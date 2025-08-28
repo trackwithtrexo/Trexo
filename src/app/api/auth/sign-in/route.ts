@@ -9,7 +9,6 @@ import { compare } from "bcryptjs";
 
 export async function POST(req: Request): Promise<Response> {
   try {
-    // TODU
     const { email, password } = (await req.json()) as SignIn;
 
     signInSchema.parse({ email, password });
@@ -19,7 +18,13 @@ export async function POST(req: Request): Promise<Response> {
     });
 
     if (!user) {
-      throw new Error("user not found");
+      throw new Error("User not found");
+    }
+
+    const isValid = await compare(password, user.password);
+
+    if (!isValid) {
+      throw new Error("User not found");
     }
 
     if (!user.status) {
@@ -34,12 +39,6 @@ export async function POST(req: Request): Promise<Response> {
         Type: EmailType.EMAIL_VERIFICATION,
       });
       throw new Error("Please verify your email");
-    }
-
-    const isValid = await compare(password, user.password);
-
-    if (!isValid) {
-      throw new Error("Invalid password");
     }
 
     const token = await tokenBuilder({ id: user.id, role: user.role });
@@ -62,15 +61,12 @@ export async function POST(req: Request): Promise<Response> {
     });
   } catch (error) {
     if (error instanceof Error) {
-      return Response.json({
-        error: error.message,
+      return new Response(JSON.stringify({ message: error.message }), {
         status: 400,
       });
-    } else {
-      return Response.json({
-        error: "Failed to sign in",
-        status: 500,
-      });
     }
+    return new Response(JSON.stringify({ message: "Failed to sign in" }), {
+      status: 500,
+    });
   }
 }
