@@ -39,7 +39,7 @@ export default function Home() {
       role: "Frontend Developer",
 
       description:
-        "Expert in React.js. Focuseing on creating user interfaces and responsive web applications.",
+        "Expert in React.js, Next.js. Focuseing on creating user interfaces and responsive web applications.",
       social: { github: "https://www.linkedin.com/in/devansh-dholiya-274017249/", linkedin: "https://github.com/DevanshDholiya" },
     },
   ];
