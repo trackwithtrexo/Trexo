@@ -1,4 +1,5 @@
-import { VerificationToken } from "@/types/authTypes";
+import axios from "axios";
+import { ApiErrorPayload, VerificationToken } from "@/types/authTypes";
 import crypto from "crypto";
 import PRISMA from "@/utils/prisma";
 import { CLIENT_URL } from "@/config/config";
@@ -42,3 +43,11 @@ export const createVerificationToken = async ({
       : new Error("Failed to create verification token");
   }
 };
+
+export function extractAxiosError(e: unknown): string {
+  if (axios.isAxiosError(e)) {
+    const data = e.response?.data as ApiErrorPayload | undefined;
+    return data?.message ?? data?.error ?? e.message ?? "Request failed";
+  }
+  return e instanceof Error ? e.message : "Something went wrong";
+}
