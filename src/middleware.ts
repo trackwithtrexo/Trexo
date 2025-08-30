@@ -5,7 +5,10 @@ export function middleware(request: NextRequest) {
   const token = request.cookies.get("trexo")?.value;
 
   // Prevent authenticated users from accessing /sign-in
-  if (request.nextUrl.pathname === "/auth/signin") {
+  if (
+    request.nextUrl.pathname === "/auth/signin" ||
+    request.nextUrl.pathname === "/auth/signup"
+  ) {
     if (token) {
       const dashboardUrl = new URL("/dashboard", request.url);
       return NextResponse.redirect(dashboardUrl);
@@ -21,5 +24,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/dashboard", "/auth/signin"],
+  matcher: ["/dashboard", "/auth/signin", "/auth/signup"],
 };
