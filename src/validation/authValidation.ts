@@ -35,7 +35,7 @@ export const signUpSchema = z.object({
     .max(100, "Name must be less than 100 characters")
     .regex(/^[A-Za-z0-9]+$/, "Name must contain only letters and numbers")
     .refine(
-      (val) => /[A-Za-z]/.test(val) && /[0-9]/.test(val),
+      (val) => /[A-Za-z]/.test(val) || /[0-9]/.test(val),
       "Name must contain both letters and numbers"
     ),
   email: z
