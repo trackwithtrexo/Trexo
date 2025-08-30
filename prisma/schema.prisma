@@ -17,26 +17,91 @@ model User {
   status   Boolean @default(false)
   jwtToken String?
   access   ACCESS  @default(ACTIVE)
+
+  transactions      User_Transaction[]  @relation("User_Transaction")
+  Group             Group[]             @relation("User_Group")
+  Group_Transaction Group_Transaction[] @relation("User_Group_Transaction")
 }
 
 model GoogleUser {
-  id       String     @id @default(uuid())
+  id       String  @id @default(uuid())
   name     String
   email    String  @unique
   picture  String
   role     ROLE    @default(GOOGLEUSER)
-  status   Boolean
+  status   Boolean @default(true)
   jwtToken String?
   access   ACCESS  @default(ACTIVE)
+
+  transactions      User_Transaction[]  @relation("GoogleUser_Transaction")
+  Group             Group[]             @relation("GoogleUser_Group")
+  Group_Transaction Group_Transaction[] @relation("GoogleUser_Group_Transaction")
+}
+
+model Group {
+  id          String  @id @default(uuid())
+  name        String
+  groupCode   String
+  description String?
+
+  userId       String?
+  googleUserId String?
+
+  // Relations
+  user       User?       @relation("User_Group", fields: [userId], references: [id])
+  googleUser GoogleUser? @relation("GoogleUser_Group", fields: [googleUserId], references: [id])
+}
+
+model Group_Transaction {
+  id     String @id @default(uuid())
+  amount Int
+
+  userId       String?
+  googleUserId String?
+
+  // Relations
+  user       User?       @relation("User_Group_Transaction", fields: [userId], references: [id])
+  googleUser GoogleUser? @relation("GoogleUser_Group_Transaction", fields: [googleUserId], references: [id])
 }
 
 model Token {
-  id          String          @id @default(uuid())
+  id          String       @id @default(uuid())
   token       String
   tokenType   TOKEN_TYPE
   tokenStatus TOKEN_STATUS @default(VALIDATE)
   expiresIn   DateTime
   email       String
+}
+
+model User_Transaction {
+  id              String   @id @default(uuid())
+  amount          Int
+  description     String?
+  category        EXPENSE
+  transactionDate DateTime
+
+  userId       String?
+  googleUserId String?
+
+  // Relations
+  user       User?       @relation("User_Transaction", fields: [userId], references: [id])
+  googleUser GoogleUser? @relation("GoogleUser_Transaction", fields: [googleUserId], references: [id])
+}
+
+enum EXPENSE {
+  OTHER
+  BILLS
+  INCOME
+  FOOD
+  ENTERTAINMENT
+  TRANSPORTATION
+  EMI
+  HEALTHCARE
+  EDUCATION
+  INVESTMENT
+  SHOPPING
+  FUEL
+  GROCERY
 }
 
 enum ACCESS {

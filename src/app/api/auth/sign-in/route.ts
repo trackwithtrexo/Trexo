@@ -21,10 +21,8 @@ export async function POST(req: Request): Promise<Response> {
       throw new Error("User not found");
     }
 
-    const isValid = await compare(password, user.password);
-
-    if (!isValid) {
-      throw new Error("User not found");
+    if (await compare(password, user.password)) {
+      throw new Error("Invalid credentials");
     }
 
     if (!user.status) {
