@@ -43,7 +43,10 @@ export default function Home() {
 
       description:
         "Expert in React.js, Next.js. Focuseing on creating user interfaces and responsive web applications.",
-      social: { github: "https://www.linkedin.com/in/devansh-dholiya-274017249/", linkedin: "https://github.com/DevanshDholiya" },
+      social: {
+        github: "https://www.linkedin.com/in/devansh-dholiya-274017249/",
+        linkedin: "https://github.com/DevanshDholiya",
+      },
     },
   ];
 
@@ -120,7 +123,7 @@ export default function Home() {
           <Darkmode />
           <Button
             onClick={() => router.push("/auth/signup")}
-            className="bg-green-500 hover:bg-green-500 hover:scale-105 hover:shadow-lg hover:shadow-green-800 text-white flex items-center gap-2"
+            className="bg-green-500 hover:bg-green-500 cursor-pointer hover:scale-105 hover:shadow-lg hover:shadow-green-800 text-white flex items-center gap-2"
           >
             Get Started now <ArrowRight />
           </Button>
@@ -144,7 +147,7 @@ export default function Home() {
             and beautiful insights.&rdquo;
           </p>
           <Button
-            className="bg-green-500 hover:bg-green-500 hover:scale-105 hover:shadow-lg hover:shadow-green-800 text-white flex items-center gap-2 mt-10"
+            className="bg-green-500 hover:bg-green-500 hover:scale-105 hover:shadow-lg hover:shadow-green-800 text-white flex cursor-pointer items-center gap-2 mt-10"
             onClick={() => router.push("/auth/signup")}
           >
             Get Started Now
@@ -349,12 +352,14 @@ export default function Home() {
                         <Button
                           variant="outline"
                           size="sm"
+                          className="cursor-pointer"
                           onClick={() => window.open(dev.social.github)}
                         >
                           <Github className="w-4 h-4 mr-2" /> GitHub
                         </Button>
                         <Button
                           variant="outline"
+                          className="cursor-pointer"
                           size="sm"
                           onClick={() => window.open(dev.social.linkedin)}
                         >
@@ -385,7 +390,7 @@ export default function Home() {
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button
-                  className="bg-green-500 text-lg px-8 py-4 hover:scale-105 hover:shadow-lg hover:bg-green-500 hover:shadow-green-800 text-white"
+                  className="bg-green-500 text-lg px-8 py-4 hover:scale-105 cursor-pointer hover:shadow-lg hover:bg-green-500 hover:shadow-green-800 text-white"
                   onClick={() => router.push("/auth/signup")}
                 >
                   <Zap className="mr-2" /> Get Started Free
@@ -393,8 +398,8 @@ export default function Home() {
                 <Button
                   variant="outline"
                   size="lg"
-                  className="text-lg px-8 py-4 hover:scale-105"
-                  onClick={() => router.push("/auth/login")}
+                  className="text-lg px-8 py-4 cursor-pointer hover:scale-105"
+                  onClick={() => router.push("/auth/signin")}
                 >
                   Sign In
                 </Button>
