@@ -1,392 +1,334 @@
 "use client"
-import { useState } from 'react';
-import { Plus, Minus, User, Home, BarChart3, Calendar, Settings, CreditCard, TrendingUp, TrendingDown, Wallet } from 'lucide-react';
+import React, { useState } from 'react';
+import { 
+  PlusCircle, 
+  MinusCircle, 
+  RefreshCw, 
+  Moon, 
+  User,
+  Calendar,
+  TrendingUp,
+  TrendingDown,
+  RotateCcw
+} from 'lucide-react';
 
-export default function TrexoDashboard() {
-  const [selectedPeriod, setSelectedPeriod] = useState('This Month');
+interface MonthlyData {
+  month: string;
+  amount: number;
+}
 
-  // Sample data
-  const financialOverview = {
-    balance: 12450.75,
-    income: 8500.00,
-    expenses: 6720.25
+interface Transaction {
+  id: number;
+  description: string;
+  amount: number;
+  category: string;
+  date: string;
+}
+
+interface StatCard {
+  title: string;
+  amount: number;
+  icon: React.ReactNode;
+  color: 'blue' | 'green' | 'red';
+}
+
+type TabType = 'Dashboard' | 'History' | 'Budget' | 'Group';
+
+const Dashboard: React.FC = () => {
+  const [activeTab, setActiveTab] = useState<TabType>('Dashboard');
+  const [dateRange, setDateRange] = useState<string>('Dec 25, 2024 - Sep 01, 2025');
+
+  const formatCurrency = (amount: number): string => {
+    return `₹ ${Math.abs(amount).toLocaleString()}`;
   };
 
-  const expenseCategories = [
-    { name: 'Food & Restaurants', amount: 1245.50, color: '#FF6B9D', icon: '🍽️' },
-    { name: 'Transportation', amount: 890.25, color: '#4DABF7', icon: '🚗' },
-    { name: 'Entertainment', amount: 650.75, color: '#69DB7C', icon: '🎬' },
-    { name: 'Shopping', amount: 1180.30, color: '#FFD43B', icon: '🛍️' },
-    { name: 'Bills & Utilities', amount: 1520.45, color: '#9775FA', icon: '⚡' },
-    { name: 'Healthcare', amount: 433.00, color: '#FF8787', icon: '🏥' },
-    { name: 'Travel', amount: 800.00, color: '#74C0FC', icon: '✈️' }
+  const getColorClasses = (color: StatCard['color']) => {
+    const colorMap = {
+      blue: {
+        text: 'text-blue-400',
+        icon: 'text-blue-400'
+      },
+      green: {
+        text: 'text-green-400',
+        icon: 'text-green-400'
+      },
+      red: {
+        text: 'text-red-400',
+        icon: 'text-red-400'
+      }
+    };
+    return colorMap[color];
+  };
+
+  const handleTabClick = (tab: TabType): void => {
+    setActiveTab(tab);
+  };
+
+  // Sample data with proper typing
+  const monthlyData: MonthlyData[] = [
+    { month: 'Jan', amount: 0 },
+    { month: 'Feb', amount: 0 },
+    { month: 'Mar', amount: 0 },
+    { month: 'Apr', amount: 0 },
+    { month: 'May', amount: 0 },
+    { month: 'Jun', amount: 0 },
+    { month: 'Jul', amount: 0 },
+    { month: 'Aug', amount: 45000 },
+    { month: 'Sep', amount: 0 },
+    { month: 'Oct', amount: 0 },
+    { month: 'Nov', amount: 0 },
+    { month: 'Dec', amount: 0 },
   ];
 
-  const weeklySpending = [
-    { week: 'Week 1', amount: 1680 },
-    { week: 'Week 2', amount: 1420 },
-    { week: 'Week 3', amount: 1890 },
-    { week: 'Week 4', amount: 1730 }
+  const maxAmount: number = Math.max(...monthlyData.map(d => d.amount));
+
+  const transactions: Transaction[] = [
+    { id: 1, description: 'Grocery Shopping', amount: -2500, category: 'Food', date: '2024-08-15' },
+    { id: 2, description: 'Salary', amount: 50000, category: 'Income', date: '2024-08-01' },
+    { id: 3, description: 'Restaurant', amount: -1200, category: 'Food', date: '2024-08-10' },
+    { id: 4, description: 'Utilities', amount: -3000, category: 'Other', date: '2024-08-05' },
   ];
 
-  const maxWeeklySpending = Math.max(...weeklySpending.map(w => w.amount));
+  const statCards: StatCard[] = [
+    {
+      title: 'Remaining',
+      amount: 0,
+      icon: <RotateCcw className="w-5 h-5" />,
+      color: 'blue'
+    },
+    {
+      title: 'Income',
+      amount: 55,
+      icon: <TrendingUp className="w-5 h-5" />,
+      color: 'green'
+    },
+    {
+      title: 'Expenses',
+      amount: 55,
+      icon: <TrendingDown className="w-5 h-5" />,
+      color: 'red'
+    }
+  ];
 
   return (
-    <div className="min-h-screen bg-slate-950">
-      {/* Sidebar Navigation */}
-      <div className="fixed left-0 top-0 h-full w-64 bg-slate-900/80 backdrop-blur-xl border-r border-slate-800">
-        {/* Logo */}
-        <div className="p-6 border-b border-slate-800">
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-gradient-to-r from-violet-500 to-purple-600 rounded-xl flex items-center justify-center">
-              <Wallet className="w-6 h-6 text-white" />
-            </div>
-            <h1 className="text-2xl font-bold text-white tracking-tight">Trexo</h1>
+    <div className="min-h-screen bg-black text-white">
+      {/* Header */}
+      <header className="flex items-center justify-between p-6 border-b border-gray-800 mx-[10%]">
+        <div className="flex items-center space-x-3">
+          <div className="w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center">
+            <User className="w-5 h-5 text-black" />
           </div>
+          <span className="text-xl font-semibold">
+            spend<span className="text-green-400">wise</span>
+          </span>
         </div>
 
-        {/* Navigation Menu */}
-        <nav className="p-4 space-y-2">
-          {[
-            { icon: Home, label: 'Dashboard', active: true },
-            { icon: BarChart3, label: 'Analytics' },
-            { icon: Calendar, label: 'Budget' },
-            { icon: CreditCard, label: 'Transactions' },
-            { icon: Settings, label: 'Settings' }
-          ].map((item, index) => (
+        <nav className="flex space-x-8">
+          {(['Dashboard', 'History', 'Budget', 'Group'] as TabType[]).map((tab) => (
             <button
-              key={index}
-              className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-all ${
-                item.active 
-                  ? 'bg-violet-500/20 text-violet-400 border border-violet-500/30' 
-                  : 'text-slate-400 hover:text-white hover:bg-slate-800/50'
+              key={tab}
+              onClick={() => handleTabClick(tab)}
+              className={`px-4 py-2 rounded-lg transition-colors ${
+                activeTab === tab 
+                  ? 'text-green-400 border-b-2 border-green-400' 
+                  : 'text-gray-400 hover:text-white'
               }`}
             >
-              <item.icon className="w-5 h-5" />
-              <span className="font-medium">{item.label}</span>
+              {tab}
             </button>
           ))}
         </nav>
-      </div>
+
+        <div className="flex items-center space-x-4">
+          <button className="p-2 rounded-lg hover:bg-gray-800 transition-colors">
+            <Moon className="w-5 h-5" />
+          </button>
+          <div className="w-10 h-10 bg-pink-500 rounded-full flex items-center justify-center font-semibold">
+            D
+          </div>
+        </div>
+      </header>
 
       {/* Main Content */}
-      <div className="ml-64 p-8">
-        {/* Header */}
+      <main className="p-6 mx-[10%]">
+        {/* Page Title and Actions */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h2 className="text-3xl font-bold text-white mb-2">
-              Welcome Back, <span className="text-violet-400">Alex</span> 👋
-            </h2>
-            <p className="text-slate-400">Here's your financial overview for today</p>
-          </div>
-          
-          {/* Profile & Period Selector */}
-          <div className="flex items-center space-x-4">
-            <select 
-              value={selectedPeriod}
-              onChange={(e) => setSelectedPeriod(e.target.value)}
-              className="bg-slate-800 border border-slate-700 rounded-xl px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-violet-500"
-            >
-              <option>This Week</option>
-              <option>This Month</option>
-              <option>This Year</option>
-            </select>
-            <div className="w-12 h-12 bg-gradient-to-r from-violet-500 to-purple-600 rounded-full flex items-center justify-center cursor-pointer hover:shadow-lg hover:shadow-violet-500/25 transition-all">
-              <User className="w-6 h-6 text-white" />
-            </div>
-          </div>
-        </div>
-
-        {/* Financial Overview Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          {/* Balance */}
-          <div className="bg-slate-900/60 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-6 hover:shadow-xl hover:shadow-violet-500/10 transition-all">
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-12 h-12 bg-violet-500/20 rounded-xl flex items-center justify-center">
-                <Wallet className="w-6 h-6 text-violet-400" />
-              </div>
-              <span className="text-sm text-slate-400 font-medium">Total Balance</span>
-            </div>
-            <p className="text-3xl font-bold text-white mb-2">₹{financialOverview.balance.toLocaleString()}</p>
-            <div className="flex items-center space-x-2">
-              <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-              <span className="text-sm text-green-400">+12.5% from last month</span>
-            </div>
+            <h1 className="text-3xl font-bold mb-2">Dashboard</h1>
+            <p className="text-gray-400">
+              Welcome Back, <span className="text-blue-400">Devansh</span> 👋
+            </p>
           </div>
 
-          {/* Income */}
-          <div className="bg-slate-900/60 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-6 hover:shadow-xl hover:shadow-green-500/10 transition-all">
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-12 h-12 bg-green-500/20 rounded-xl flex items-center justify-center">
-                <TrendingUp className="w-6 h-6 text-green-400" />
-              </div>
-              <span className="text-sm text-slate-400 font-medium">Total Income</span>
-            </div>
-            <p className="text-3xl font-bold text-white mb-2">₹{financialOverview.income.toLocaleString()}</p>
-            <div className="flex items-center space-x-2">
-              <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-              <span className="text-sm text-green-400">+8.2% increase</span>
-            </div>
-          </div>
-
-          {/* Expenses */}
-          <div className="bg-slate-900/60 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-6 hover:shadow-xl hover:shadow-red-500/10 transition-all">
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-12 h-12 bg-red-500/20 rounded-xl flex items-center justify-center">
-                <TrendingDown className="w-6 h-6 text-red-400" />
-              </div>
-              <span className="text-sm text-slate-400 font-medium">Total Expenses</span>
-            </div>
-            <p className="text-3xl font-bold text-white mb-2">₹{financialOverview.expenses.toLocaleString()}</p>
-            <div className="flex items-center space-x-2">
-              <div className="w-2 h-2 bg-red-400 rounded-full animate-pulse"></div>
-              <span className="text-sm text-red-400">-3.1% from last month</span>
-            </div>
+          <div className="flex space-x-3">
+            <button className="flex items-center space-x-2 bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg transition-colors">
+              <PlusCircle className="w-4 h-4" />
+              <span>New Income</span>
+              <span className="bg-orange-500 text-xs px-2 py-1 rounded-full">!</span>
+            </button>
+            <button className="flex items-center space-x-2 bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg transition-colors">
+              <MinusCircle className="w-4 h-4" />
+              <span>New Expense</span>
+              <span className="bg-red-500 text-xs px-2 py-1 rounded-full">🔒</span>
+            </button>
+            <button className="flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg transition-colors">
+              <RefreshCw className="w-4 h-4" />
+              <span>New Recurring</span>
+              <span className="bg-yellow-500 text-xs px-2 py-1 rounded-full">🏆</span>
+            </button>
           </div>
         </div>
 
-        {/* Action Buttons */}
-        <div className="flex gap-4 mb-8">
-          <button className="flex items-center space-x-3 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 rounded-xl px-8 py-4 transition-all hover:shadow-lg hover:shadow-green-500/25 transform hover:scale-105">
-            <Plus className="w-5 h-5 text-white" />
-            <span className="font-semibold text-white">Add Income</span>
-          </button>
-          
-          <button className="flex items-center space-x-3 bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 rounded-xl px-8 py-4 transition-all hover:shadow-lg hover:shadow-red-500/25 transform hover:scale-105">
-            <Minus className="w-5 h-5 text-white" />
-            <span className="font-semibold text-white">Add Expense</span>
-          </button>
+        {/* Date Range Selector */}
+        <div className="flex items-center space-x-2 mb-6">
+          <Calendar className="w-4 h-4 text-gray-400" />
+          <span className="text-gray-300">{dateRange}</span>
         </div>
 
-        {/* Charts Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Weekly Spending Chart */}
-          <div className="bg-slate-900/60 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-6">
+        {/* Stats Cards */}
+        <div className="grid grid-cols-3 gap-6 mb-8">
+          {statCards.map((card, index) => {
+            const colors = getColorClasses(card.color);
+            return (
+              <div key={index} className="bg-gray-900 p-6 rounded-xl border border-gray-800">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className={`${colors.text} font-medium`}>{card.title}</h3>
+                  <div className={colors.icon}>
+                    {card.icon}
+                  </div>
+                </div>
+                <div className={`text-3xl font-bold ${colors.text}`}>
+                  {formatCurrency(card.amount)}
+                </div>
+                <div className="text-sm text-gray-400">All time</div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Charts Section */}
+        <div className="grid grid-cols-2 gap-6">
+          {/* Transactions / Monthly Money Meters */}
+          <div className="bg-gray-900 p-6 rounded-xl border border-gray-800">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-semibold text-white">Weekly Spending</h3>
-              <div className="flex items-center space-x-2">
-                <div className="w-3 h-3 bg-violet-400 rounded-full"></div>
-                <span className="text-sm text-slate-400">Expenses</span>
-              </div>
+              <h3 className="text-xl font-semibold">Transactions</h3>
+              <button className="text-sm text-blue-400 hover:text-blue-300">
+                Monthly Money Meters
+              </button>
             </div>
-            
-            <div className="space-y-4">
-              {weeklySpending.map((week, index) => (
-                <div key={index} className="space-y-2">
-                  <div className="flex justify-between items-center">
-                    <span className="text-slate-300 font-medium">{week.week}</span>
-                    <span className="text-white font-semibold">₹{week.amount.toLocaleString()}</span>
-                  </div>
-                  <div className="w-full bg-slate-800 rounded-full h-3">
-                    <div 
-                      className="bg-gradient-to-r from-violet-500 to-purple-600 h-3 rounded-full transition-all duration-1000 ease-out shadow-lg shadow-violet-500/30"
-                      style={{ width: `${(week.amount / maxWeeklySpending) * 100}%` }}
-                    ></div>
-                  </div>
+
+            {/* Bar Chart */}
+            <div className="h-64 flex items-end justify-between space-x-2">
+              {monthlyData.map((data: MonthlyData, index: number) => (
+                <div key={data.month} className="flex flex-col items-center space-y-2">
+                  <div 
+                    className={`w-8 rounded-t transition-all duration-300 ${
+                      data.amount > 0 ? 'bg-blue-500' : 'bg-gray-700'
+                    }`}
+                    style={{
+                      height: data.amount > 0 ? `${(data.amount / maxAmount) * 200}px` : '4px'
+                    }}
+                  ></div>
+                  <span className="text-xs text-gray-400">{data.month}</span>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Expense Categories */}
-          <div className="bg-slate-900/60 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-6">
+          {/* Expenses / Category Crustview */}
+          <div className="bg-gray-900 p-6 rounded-xl border border-gray-800">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-semibold text-white">Expense Categories</h3>
-              <button className="text-violet-400 hover:text-violet-300 text-sm font-medium">View All</button>
+              <h3 className="text-xl font-semibold">Expenses</h3>
+              <button className="text-sm text-blue-400 hover:text-blue-300">
+                Category Crustview
+              </button>
             </div>
-            
-            <div className="space-y-3">
-              {expenseCategories.slice(0, 6).map((category, index) => (
-                <div key={index} className="flex items-center justify-between p-3 bg-slate-800/30 rounded-xl hover:bg-slate-800/50 transition-all group">
-                  <div className="flex items-center space-x-3">
-                    <span className="text-2xl">{category.icon}</span>
-                    <div>
-                      <p className="text-slate-200 font-medium group-hover:text-white transition-colors">{category.name}</p>
-                      <div className="w-16 bg-slate-700 rounded-full h-1.5 mt-1">
-                        <div 
-                          className="h-1.5 rounded-full transition-all duration-500"
-                          style={{ 
-                            backgroundColor: category.color,
-                            width: `${(category.amount / Math.max(...expenseCategories.map(c => c.amount))) * 100}%`
-                          }}
-                        ></div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-white font-semibold">₹{category.amount.toLocaleString()}</p>
-                    <p className="text-xs text-slate-400">{((category.amount / financialOverview.expenses) * 100).toFixed(1)}%</p>
-                  </div>
+
+            <div className="space-y-6">
+              <h4 className="text-lg font-medium">Expense Distribution</h4>
+              
+              {/* Pie Chart */}
+              <div className="flex items-center justify-center">
+                <div className="relative w-48 h-48">
+                  <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                    {/* Food segment (roughly 30%) */}
+                    <circle
+                      cx="50"
+                      cy="50"
+                      r="35"
+                      fill="none"
+                      stroke="#ef4444"
+                      strokeWidth="20"
+                      strokeDasharray="66 214"
+                      strokeDashoffset="0"
+                      className="transition-all duration-300"
+                    />
+                    {/* Other segment (roughly 70%) */}
+                    <circle
+                      cx="50"
+                      cy="50"
+                      r="35"
+                      fill="none"
+                      stroke="#6b7280"
+                      strokeWidth="20"
+                      strokeDasharray="154 214"
+                      strokeDashoffset="-66"
+                      className="transition-all duration-300"
+                    />
+                  </svg>
                 </div>
-              ))}
+              </div>
+
+              {/* Legend */}
+              <div className="space-y-2">
+                <div className="flex items-center space-x-3">
+                  <div className="w-3 h-3 bg-gray-500 rounded-full"></div>
+                  <span className="text-gray-300">Other</span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+                  <span className="text-gray-300">Food</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Bottom Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">
-          {/* Spending Trends */}
-          <div className="lg:col-span-2 bg-slate-900/60 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-6">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-semibold text-white">Spending Trends</h3>
-              <div className="flex items-center space-x-4">
-                <div className="flex items-center space-x-2">
-                  <div className="w-3 h-3 bg-green-400 rounded-full"></div>
-                  <span className="text-sm text-slate-400">Income</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <div className="w-3 h-3 bg-red-400 rounded-full"></div>
-                  <span className="text-sm text-slate-400">Expenses</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Custom Area Chart */}
-            <div className="relative h-48">
-              <svg className="w-full h-full" viewBox="0 0 500 200">
-                {/* Grid lines */}
-                {[...Array(6)].map((_, i) => (
-                  <line
-                    key={i}
-                    x1="50"
-                    y1={30 + i * 28}
-                    x2="450"
-                    y2={30 + i * 28}
-                    stroke="#374151"
-                    strokeWidth="0.5"
-                    opacity="0.3"
-                  />
-                ))}
-                
-                {/* Income area */}
-                <path
-                  d="M50 50 L150 40 L250 35 L350 45 L450 38 L450 170 L50 170 Z"
-                  fill="url(#incomeGradient)"
-                  opacity="0.3"
-                />
-                
-                {/* Expense area */}
-                <path
-                  d="M50 80 L150 75 L250 85 L350 70 L450 72 L450 170 L50 170 Z"
-                  fill="url(#expenseGradient)"
-                  opacity="0.3"
-                />
-                
-                {/* Income line */}
-                <polyline
-                  points="50,50 150,40 250,35 350,45 450,38"
-                  fill="none"
-                  stroke="#10B981"
-                  strokeWidth="3"
-                  className="drop-shadow-lg"
-                />
-                
-                {/* Expense line */}
-                <polyline
-                  points="50,80 150,75 250,85 350,70 450,72"
-                  fill="none"
-                  stroke="#EF4444"
-                  strokeWidth="3"
-                  className="drop-shadow-lg"
-                />
-
-                {/* Data points */}
-                {['Jan', 'Feb', 'Mar', 'Apr', 'May'].map((month, index) => (
-                  <g key={index}>
-                    <circle
-                      cx={50 + index * 100}
-                      cy={50 - index * 2.5}
-                      r="4"
-                      fill="#10B981"
-                      className="drop-shadow-lg"
-                    />
-                    <circle
-                      cx={50 + index * 100}
-                      cy={80 - index * 1.5}
-                      r="4"
-                      fill="#EF4444"
-                      className="drop-shadow-lg"
-                    />
-                    <text
-                      x={50 + index * 100}
-                      y={190}
-                      textAnchor="middle"
-                      className="text-xs fill-slate-400"
-                    >
-                      {month}
-                    </text>
-                  </g>
-                ))}
-
-                {/* Gradients */}
-                <defs>
-                  <linearGradient id="incomeGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                    <stop offset="0%" stopColor="#10B981" stopOpacity="0.5"/>
-                    <stop offset="100%" stopColor="#10B981" stopOpacity="0"/>
-                  </linearGradient>
-                  <linearGradient id="expenseGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                    <stop offset="0%" stopColor="#EF4444" stopOpacity="0.5"/>
-                    <stop offset="100%" stopColor="#EF4444" stopOpacity="0"/>
-                  </linearGradient>
-                </defs>
-              </svg>
-            </div>
-          </div>
-
-          {/* Quick Stats */}
-          <div className="space-y-6">
-            {/* Savings Goal */}
-            <div className="bg-slate-900/60 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-6">
-              <h4 className="text-lg font-semibold text-white mb-4">Savings Goal</h4>
-              <div className="space-y-3">
-                <div className="flex justify-between items-center">
-                  <span className="text-slate-400">Target: ₹15,000</span>
-                  <span className="text-white font-semibold">83%</span>
-                </div>
-                <div className="w-full bg-slate-800 rounded-full h-3">
-                  <div className="bg-gradient-to-r from-violet-500 to-purple-600 h-3 rounded-full shadow-lg shadow-violet-500/30" 
-                       style={{ width: '83%' }}></div>
-                </div>
-                <p className="text-sm text-slate-400">₹2,550 remaining</p>
-              </div>
-            </div>
-
-            {/* Recent Activity */}
-            <div className="bg-slate-900/60 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-6">
-              <h4 className="text-lg font-semibold text-white mb-4">Recent Activity</h4>
-              <div className="space-y-3">
-                {[
-                  { type: 'expense', desc: 'Coffee Shop', amount: 125, time: '2h ago', category: 'Food' },
-                  { type: 'income', desc: 'Freelance Payment', amount: 2500, time: '1d ago', category: 'Work' },
-                  { type: 'expense', desc: 'Uber Ride', amount: 180, time: '2d ago', category: 'Transport' }
-                ].map((transaction, index) => (
-                  <div key={index} className="flex items-center justify-between p-3 bg-slate-800/20 rounded-lg hover:bg-slate-800/40 transition-all">
-                    <div className="flex items-center space-x-3">
-                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-                        transaction.type === 'income' ? 'bg-green-500/20' : 'bg-red-500/20'
-                      }`}>
-                        {transaction.type === 'income' ? 
-                          <Plus className="w-4 h-4 text-green-400" /> : 
-                          <Minus className="w-4 h-4 text-red-400" />
-                        }
-                      </div>
-                      <div>
-                        <p className="text-sm text-white font-medium">{transaction.desc}</p>
-                        <p className="text-xs text-slate-400">{transaction.time}</p>
-                      </div>
-                    </div>
-                    <p className={`text-sm font-semibold ${
-                      transaction.type === 'income' ? 'text-green-400' : 'text-red-400'
-                    }`}>
-                      {transaction.type === 'income' ? '+' : '-'}₹{transaction.amount}
-                    </p>
+        {/* Recent Transactions */}
+        <div className="mt-8 bg-gray-900 p-6 rounded-xl border border-gray-800">
+          <h3 className="text-xl font-semibold mb-4">Recent Transactions</h3>
+          <div className="space-y-3">
+            {transactions.map((transaction: Transaction) => (
+              <div key={transaction.id} className="flex items-center justify-between p-3 bg-gray-800 rounded-lg hover:bg-gray-750 transition-colors">
+                <div className="flex items-center space-x-3">
+                  <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                    transaction.amount > 0 ? 'bg-green-600' : 'bg-red-600'
+                  }`}>
+                    {transaction.amount > 0 ? 
+                      <TrendingUp className="w-5 h-5" /> : 
+                      <TrendingDown className="w-5 h-5" />
+                    }
                   </div>
-                ))}
+                  <div>
+                    <div className="font-medium">{transaction.description}</div>
+                    <div className="text-sm text-gray-400">{transaction.category}</div>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <div className={`font-semibold ${
+                    transaction.amount > 0 ? 'text-green-400' : 'text-red-400'
+                  }`}>
+                    {formatCurrency(transaction.amount)}
+                  </div>
+                  <div className="text-sm text-gray-400">{transaction.date}</div>
+                </div>
               </div>
-            </div>
+            ))}
           </div>
         </div>
-      </div>
+      </main>
     </div>
   );
-}
+};
+
+export default Dashboard;
