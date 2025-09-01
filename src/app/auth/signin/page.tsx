@@ -136,6 +136,7 @@ export default function LoginPage() {
                 className="text-green-600  hover:text-green-500 cursor-pointer"
                 disabled={isSubmitting || googleLoading}
                 type="button"
+                onClick={() => router.push("/auth/forgot-password")}
               >
                 Forgot Password?
               </button>
@@ -148,7 +149,7 @@ export default function LoginPage() {
               className="w-full bg-gradient-to-r dark:text-black from-green-500 hover:cursor-pointer to-green-600 hover:scale-105 text-white font-semibold h-9 rounded-md shadow-md hover:shadow-green-500/20 text-sm"
             >
               {isSubmitting ? "Logging in..." : "Login"}
-              {/* <ArrowRight className="w-3 h-3 ml-1" /> */}
+             
             </Button>
 
             {/* Divider */}
@@ -160,7 +161,7 @@ export default function LoginPage() {
               <span className="flex-1 border-t border-gray-300 dark:border-gray-500/30" />
             </div>
 
-            {/* Google */}
+           
             {/* Google */}
             <Button
               type="button"
