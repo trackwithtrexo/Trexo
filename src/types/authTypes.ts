@@ -1,4 +1,4 @@
-import { EmailType, TokenType } from "@/utils/enum";
+import { EmailType, Role, TokenType } from "@/utils/enum";
 
 //*** SIGN IN ***//
 export interface SignIn {
@@ -11,12 +11,6 @@ export interface SignUp {
   email: string;
   password: string;
   name: string;
-}
-
-//*** TOKEN DATA ***//
-export interface TokenData {
-  id: string;
-  role: string;
 }
 
 //*** CREATE VERIFICATION TOKEN ***//
@@ -37,6 +31,11 @@ export interface Email {
     date: Date;
     paidBy: string;
   };
+}
+
+export interface ChangePassword {
+  token: string;
+  password: string;
 }
 
 export interface JWTPayload {
@@ -64,4 +63,12 @@ export interface ApiErrorPayload {
   message?: string;
   error?: string;
   code?: string;
+}
+
+//*** TOKEN DATA ***//
+export interface TokenData {
+  id: string;
+  role: Role;
+  iat: number;
+  exp: number;
 }

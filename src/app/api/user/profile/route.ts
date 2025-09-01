@@ -6,7 +6,7 @@ import bcrypt from "bcryptjs";
 import PRISMA from "@/utils/prisma";
 import { signUpSchema } from "@/validation/authValidation";
 
-export async function POST(req: Request): Promise<Response> {
+export async function GET(req: Request): Promise<Response> {
   try {
     const { email, password, name } = (await req.json()) as SignUp;
 
