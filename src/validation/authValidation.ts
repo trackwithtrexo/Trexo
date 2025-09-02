@@ -73,6 +73,10 @@ export const emailVerification = z.object({
     .email("Invalid email address"),
 });
 
+export const emailTokenVerification = z.object({
+  token: z.string().min(1, "Token is required"),
+});
+
 export const tokenVerification = z.object({
   token: z.string().min(1, "Token is required"),
   password: z
@@ -95,4 +99,25 @@ export const tokenVerification = z.object({
       (val) => /[^A-Za-z0-9]/.test(val),
       "Password must contain at least one special character"
     ),
+  confirmPassword: z
+    .string()
+    .min(6, "Confirm password must be at least 6 characters long")
+    .max(128, "Confirm password must be less than 128 characters")
+    .optional()
+    .refine((val) => {
+      if (!val) return true; // Skip validation if field is not provided
+      return /[A-Z]/.test(val);
+    }, "Confirm password must contain at least one uppercase letter")
+    .refine((val) => {
+      if (!val) return true; // Skip validation if field is not provided
+      return /[a-z]/.test(val);
+    }, "Confirm password must contain at least one lowercase letter")
+    .refine((val) => {
+      if (!val) return true; // Skip validation if field is not provided
+      return /[0-9]/.test(val);
+    }, "Confirm password must contain at least one number")
+    .refine((val) => {
+      if (!val) return true; // Skip validation if field is not provided
+      return /[^A-Za-z0-9]/.test(val);
+    }, "Confirm password must contain at least one special character"),
 });

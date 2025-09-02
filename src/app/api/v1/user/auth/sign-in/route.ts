@@ -1,7 +1,7 @@
 import { sendMail } from "@/service/sendmail";
 import { SignIn } from "@/types/authTypes";
 import { setCookie, tokenBuilder } from "@/utils/authUtils";
-import { EmailType, TokenType } from "@/utils/enum";
+import { EmailType, Role, TokenType } from "@/utils/enum";
 import { createLink, createVerificationToken } from "@/utils/helper";
 import PRISMA from "@/utils/prisma";
 import { signInSchema } from "@/validation/authValidation";
@@ -39,7 +39,14 @@ export async function POST(req: Request): Promise<Response> {
       throw new Error("Please verify your email");
     }
 
-    const token = await tokenBuilder({ id: user.id, role: user.role });
+    const now = Math.floor(Date.now() / 1000); // Current time in seconds
+    const exp = now + 86400; // Expiration in 1 day (86400 seconds)
+    const token = await tokenBuilder({
+      id: user.id,
+      role: user.role as Role,
+      exp,
+      iat: now,
+    });
 
     await PRISMA.user.update({
       where: { id: user.id },
