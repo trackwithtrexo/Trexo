@@ -9,6 +9,8 @@ import { useState } from "react";
 import { toast } from "sonner";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import axios from "axios";
+import { extractAxiosError } from "@/utils/helper";
 
 export default function ForgotPasswordPage() {
   const [loading, setLoading] = useState(false);
@@ -24,16 +26,11 @@ export default function ForgotPasswordPage() {
     const toastId = toast.loading("Sending reset link...");
     try {
       setLoading(true);
-      // 👇 API endpoint for sending reset link (adjust if needed)
-      await fetch("/api/auth/forgot-password", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
-      toast.success("Password reset link sent!", { id: toastId });
-      router.push("/auth/login");
+      const response = await axios.post("/api/auth/forgot-password", data,{withCredentials: true});
+      toast.success(response.data?.message, { id: toastId });
+      
     } catch (error) {
-      toast.error("Something went wrong. Try again.", { id: toastId });
+      toast.error(extractAxiosError(error), { id: toastId });
     } finally {
       setLoading(false);
     }

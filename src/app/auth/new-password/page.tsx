@@ -9,11 +9,11 @@ import { useState } from "react";
 import { toast } from "sonner";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { ChangePassword } from "@/types/authTypes";
+import axios from "axios";
+import { extractAxiosError } from "@/utils/helper";
 
-interface ResetPasswordForm {
-  password: string;
-  confirmPassword: string;
-}
+
 
 export default function ResetPasswordPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -26,23 +26,20 @@ export default function ResetPasswordPage() {
     handleSubmit,
     watch,
     formState: { errors },
-  } = useForm<ResetPasswordForm>();
+  } = useForm<ChangePassword>();
 
-  const onSubmit = async (data: ResetPasswordForm) => {
+  const onSubmit = async (data: ChangePassword) => {
+    
     const toastId = toast.loading("Resetting password...");
     try {
       setLoading(true);
-      // 👇 Replace with your API call
-      await fetch("/api/auth/reset-password", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password: data.password }),
-      });
-
-      toast.success("Password reset successfully!", { id: toastId });
+      const response= await axios.post("/api/auth/change-password", data, {
+        withCredentials: true,
+      })
+      toast.success(response.data?.message, { id: toastId });
       router.push("/auth/login");
     } catch (error) {
-      toast.error("Something went wrong. Try again.", { id: toastId });
+      toast.error(extractAxiosError(error), { id: toastId });
     } finally {
       setLoading(false);
     }

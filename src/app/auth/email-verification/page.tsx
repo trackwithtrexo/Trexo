@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useRouter, useSearchParams } from "next/navigation";
 import axios from "axios";
 import Image from "next/image";
+import { extractAxiosError } from "@/utils/helper";
 
 
 export default function EmailVerificationPage() {
@@ -21,27 +22,23 @@ export default function EmailVerificationPage() {
   useEffect(() => {
     if (!token) return;
 
-    // const verifyEmail = async () => {
-    //   try {
-    //     const response = await axios.post(
-    //       `${server}/api/v1/user/auth/signup-verification`,
-    //       { data: encodeResData({ token }) },
-    //       header
-    //     );
-    //     const data = decodeReqData(response.data);
-    //     setStatus("success");
-    //     setMessage(data.message);
-    //   } catch (error: any) {
-    //     if (error.response && error.response.data) {
-    //       const data = decodeReqData(error.response.data);
-    //       setStatus("error");
-    //       setMessage(data.message);
-    //     } else {
-    //       setStatus("error");
-    //       setMessage("Something went wrong. Please try again.");
-    //     }
-    //   }
-    // };
+
+    const verifyEmail = async () => {
+      try {
+        const response = await axios.post(
+          "api/v1/user/auth/signup-verification",);
+        setStatus("success");
+        setMessage(response.data.message);
+      } catch (error: any) {
+        if (extractAxiosError(error)) {
+          setStatus("error");
+          setMessage(error.response.data.message);
+        } else {
+          setStatus("error");
+          setMessage("Something went wrong. Please try again.");
+        }
+      }
+    };
 
     
   }, [token]);
