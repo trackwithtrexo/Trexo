@@ -37,7 +37,7 @@ const SignupPage = () => {
   const handleSignup = async (data: SignUp) => {
     const toastId = toast.loading("Signing up...");
     try {
-      const response = await axios.post("/api/auth/sign-up", data, {
+      const response = await axios.post("/api/v1/user/auth/sign-up", data, {
         withCredentials: true,
       });
       toast.success(response.data?.message, { id: toastId });

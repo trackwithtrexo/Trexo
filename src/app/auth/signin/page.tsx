@@ -33,7 +33,7 @@ export default function LoginPage() {
   const onSubmit = async (data: SignIn) => {
     const toastId = toast.loading("Logging in...");
     try {
-      const response = await axios.post("/api/auth/sign-in", data, {
+      const response = await axios.post("/api/v1/user/auth/sign-in", data, {
         withCredentials: true,
       });
 

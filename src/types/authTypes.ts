@@ -36,6 +36,7 @@ export interface Email {
 export interface ChangePassword {
   token: string;
   password: string;
+  confirmPassword?: string;
 }
 
 export interface JWTPayload {

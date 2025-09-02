@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { CheckCircle, XCircle, RefreshCcw, ArrowLeft } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import axios from "axios";
 import Image from "next/image";
 import { extractAxiosError } from "@/utils/helper";
@@ -11,8 +11,8 @@ import { extractAxiosError } from "@/utils/helper";
 
 export default function EmailVerificationPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const token = searchParams.get("token");
+  const Params = useParams();
+  const token = Params.token as string;
 
   const [status, setStatus] = useState<"verifying" | "success" | "error">(
     "verifying"
@@ -26,7 +26,7 @@ export default function EmailVerificationPage() {
     const verifyEmail = async () => {
       try {
         const response = await axios.post(
-          "api/v1/user/auth/signup-verification",);
+          "api/v1/user/auth/signup-verification",token,{withCredentials: true});
         setStatus("success");
         setMessage(response.data.message);
       } catch (error: any) {
@@ -39,6 +39,7 @@ export default function EmailVerificationPage() {
         }
       }
     };
+    verifyEmail()
 
     
   }, [token]);
