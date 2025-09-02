@@ -8,10 +8,12 @@ import { useForm } from "react-hook-form";
 import { useState } from "react";
 import { toast } from "sonner";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter,useParams } from "next/navigation";
 import { ChangePassword } from "@/types/authTypes";
 import axios from "axios";
 import { extractAxiosError } from "@/utils/helper";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { tokenVerification } from "@/validation/authValidation";
 
 
 
@@ -20,24 +22,25 @@ export default function ResetPasswordPage() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-
+  const Params = useParams();
+  const token = Params.token as string;
   const {
     register,
     handleSubmit,
     watch,
-    formState: { errors },
-  } = useForm<ChangePassword>();
+    formState: { errors,isSubmitting },
+  } = useForm<ChangePassword>({ resolver: zodResolver(tokenVerification)});
 
   const onSubmit = async (data: ChangePassword) => {
-    
+    console.log("ho")
     const toastId = toast.loading("Resetting password...");
     try {
       setLoading(true);
-      const response= await axios.post("/api/auth/change-password", data, {
+      const response= await axios.post("/api/v1/user/auth/change-password", {data,token}, {
         withCredentials: true,
       })
       toast.success(response.data?.message, { id: toastId });
-      router.push("/auth/login");
+      router.push("/auth/signin");
     } catch (error) {
       toast.error(extractAxiosError(error), { id: toastId });
     } finally {
@@ -150,10 +153,10 @@ export default function ResetPasswordPage() {
             {/* Submit */}
             <Button
               type="submit"
-              disabled={loading}
+              disabled={isSubmitting}
               className="w-full bg-gradient-to-r dark:text-black from-green-500 cursor-pointer to-green-600 text-white font-semibold h-9 rounded-md shadow-md hover:shadow-green-500/20 text-sm"
             >
-              {loading ? (
+              {isSubmitting? (
                 <Loader2 className="w-4 h-4 animate-spin mr-2" />
               ) : null}
               {loading ? "Resetting..." : "Reset Password"}

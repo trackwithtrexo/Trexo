@@ -11,6 +11,8 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import { extractAxiosError } from "@/utils/helper";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { emailVerification } from "@/validation/authValidation";
 
 export default function ForgotPasswordPage() {
   const [loading, setLoading] = useState(false);
@@ -20,13 +22,13 @@ export default function ForgotPasswordPage() {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<{ email: string }>();
+  } = useForm<{ email: string }>({ resolver: zodResolver(emailVerification)});
 
   const onSubmit = async (data: { email: string }) => {
     const toastId = toast.loading("Sending reset link...");
     try {
       setLoading(true);
-      const response = await axios.post("/api/auth/forgot-password", data,{withCredentials: true});
+      const response = await axios.post("/api/v1/user/auth/forgot-password", data,{withCredentials: true});
       toast.success(response.data?.message, { id: toastId });
       
     } catch (error) {

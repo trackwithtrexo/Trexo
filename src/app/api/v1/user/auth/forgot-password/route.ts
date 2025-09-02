@@ -39,7 +39,7 @@ export async function POST(req: Request): Promise<Response> {
 
     sendMail({
       email,
-      link: createLink(token, "forgot-password"),
+      link: createLink(token, "new-password"),
       Type: EmailType.FORGOT_PASSWORD,
     });
 
