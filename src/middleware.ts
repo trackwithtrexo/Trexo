@@ -4,14 +4,6 @@ import jwt from "jsonwebtoken";
 import { JWT_KEY } from "./config/config";
 import { TokenData } from "./types/authTypes";
 
-// Extend NextRequest to include custom properties
-declare module "next/server" {
-  interface NextRequest {
-    user?: string;
-    model?: string;
-  }
-}
-
 export const runtime = "nodejs";
 
 export function middleware(request: NextRequest) {
@@ -30,26 +22,28 @@ export function middleware(request: NextRequest) {
       const decoded = jwt.verify(token, JWT_KEY);
       // If valid, proceed (you can add more checks here, e.g., role-based)
       const userData: TokenData = decoded as TokenData;
-      request.user = userData.id;
-      request.model = userData.role;
+      const response = NextResponse.next();
+      response.headers.set("x-user-id", userData.id);
+      response.headers.set("x-user-role", userData.role);
     } catch (error) {
+      return NextResponse.redirect(new URL("/auth/signin", request.url));
       // Token is invalid or expired
-      if (error instanceof jwt.TokenExpiredError) {
-        return new Response(JSON.stringify({ message: "Please Login again" }), {
-          status: 401,
-          headers: { "Content-Type": "application/json" },
-        });
-      } else if (error instanceof Error) {
-        return new Response(JSON.stringify({ message: error.message }), {
-          status: 401,
-          headers: { "Content-Type": "application/json" },
-        });
-      } else {
-        return new Response(JSON.stringify({ message: "Unauthorized" }), {
-          status: 401,
-          headers: { "Content-Type": "application/json" },
-        });
-      }
+      // if (error instanceof jwt.TokenExpiredError) {
+      //   return new Response(JSON.stringify({ message: "Please Login again" }), {
+      //     status: 401,
+      //     headers: { "Content-Type": "application/json" },
+      //   });
+      // } else if (error instanceof Error) {
+      //   return new Response(JSON.stringify({ message: error.message }), {
+      //     status: 401,
+      //     headers: { "Content-Type": "application/json" },
+      //   });
+      // } else {
+      //   return new Response(JSON.stringify({ message: "Unauthorized" }), {
+      //     status: 401,
+      //     headers: { "Content-Type": "application/json" },
+      //   });
+      // }
     }
   }
 

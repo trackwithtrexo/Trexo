@@ -1,8 +1,8 @@
-import axios from "axios";
-import { ApiErrorPayload, VerificationToken } from "@/types/authTypes";
-import crypto from "crypto";
-import PRISMA from "@/utils/prisma";
 import { CLIENT_URL } from "@/config/config";
+import { ApiErrorPayload, VerificationToken } from "@/types/authTypes";
+import PRISMA from "@/utils/prisma";
+import axios from "axios";
+import crypto from "crypto";
 
 //*** CREATE RANDOM TOKEN ***//
 export const createRandomToken = (bytes = 64): string => {
@@ -11,7 +11,7 @@ export const createRandomToken = (bytes = 64): string => {
 
 //*** CREATE LINK FOR VERIFICATION ***
 export const createLink = (token: string, type: string): string => {
-  return `${CLIENT_URL}/${type}/${token}`;
+  return `${CLIENT_URL}/auth/${type}/${token}`;
 };
 
 //*** CREATE VERIFICATION TOKEN ***//

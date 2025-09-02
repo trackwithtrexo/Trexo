@@ -6,7 +6,7 @@ import bcrypt from "bcryptjs";
 import PRISMA from "@/utils/prisma";
 import { signUpSchema } from "@/validation/authValidation";
 
-export async function GET(req: Request): Promise<Response> {
+export async function POST(req: Request): Promise<Response> {
   try {
     const { email, password, name } = (await req.json()) as SignUp;
 
@@ -37,7 +37,7 @@ export async function GET(req: Request): Promise<Response> {
 
     sendMail({
       email,
-      link: createLink(token, TokenType.EMAIL_VERIFICATION),
+      link: createLink(token, "email-verification"),
       Type: EmailType.EMAIL_VERIFICATION,
     });
 
@@ -53,7 +53,7 @@ export async function GET(req: Request): Promise<Response> {
       });
     } else {
       return Response.json({
-        error: "Failed to sign in",
+        error: "Failed to sign up",
         status: 500,
       });
     }

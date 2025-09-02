@@ -39,7 +39,7 @@ export async function POST(req: Request): Promise<Response> {
 
     sendMail({
       email,
-      link: createLink(token, TokenType.FORGOT_PASSWORD),
+      link: createLink(token, "forgot-password"),
       Type: EmailType.FORGOT_PASSWORD,
     });
 
@@ -53,7 +53,7 @@ export async function POST(req: Request): Promise<Response> {
         status: 400,
       });
     }
-    return new Response(JSON.stringify({ message: "Failed to sign in" }), {
+    return new Response(JSON.stringify({ message: "Failed to send forgot password email" }), {
       status: 500,
     });
   }

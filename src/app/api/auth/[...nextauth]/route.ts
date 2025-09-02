@@ -1,6 +1,7 @@
 import { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } from "@/config/config";
-import { User } from "@/generated/prisma";
+import { ROLE, User } from "@/generated/prisma";
 import { setCookie, tokenBuilder } from "@/utils/authUtils";
+import { Role } from "@/utils/enum";
 import PRISMA from "@/utils/prisma";
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
@@ -26,7 +27,7 @@ const handler = NextAuth({
         });
 
         let userId: string;
-        let role: string;
+        let role: ROLE;
 
         if (manualUser) {
           // 2) Ensure verified if previously unverified
@@ -64,7 +65,16 @@ const handler = NextAuth({
         }
 
         // 4) Issue app token and persist only where needed
-        const token = await tokenBuilder({ id: userId, role });
+        const now = Math.floor(Date.now() / 1000); // Current time in seconds
+        const exp = now + 86400; // Expiration in 1 day (86400 seconds)
+
+        // 4) Issue app token and persist only where needed
+        const token = await tokenBuilder({
+          id: userId,
+          role: role as Role,
+          exp,
+          iat: now,
+        });
 
         if (manualUser) {
           await PRISMA.user.update({

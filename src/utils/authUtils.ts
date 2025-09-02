@@ -2,6 +2,7 @@ import { JWT_KEY } from "@/config/config";
 import { CookieType, JWTPayload, TokenData } from "@/types/authTypes";
 import JWT from "jsonwebtoken";
 import { cookies } from "next/headers";
+import { Role } from "./enum";
 
 export function generateJWT(payload: JWTPayload): string {
   const defaultOptions: JWT.SignOptions = { expiresIn: "1d" };
@@ -10,7 +11,7 @@ export function generateJWT(payload: JWTPayload): string {
 
 export async function tokenBuilder(
   data: TokenData
-): Promise<{ accessToken: string; role: string; id: string }> {
+): Promise<{ accessToken: string; role: Role; id: string }> {
   const accessToken = generateJWT({
     id: data.id,
     role: data.role,
