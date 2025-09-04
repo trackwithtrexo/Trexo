@@ -36,6 +36,7 @@ type TabType = 'Dashboard' | 'History' | 'Budget' | 'Group';
 
 const Dashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabType>('Dashboard');
+  /* eslint-disable @typescript-eslint/no-unused-vars */
   const [dateRange, setDateRange] = useState<string>('Dec 25, 2024 - Sep 01, 2025');
 
   const formatCurrency = (amount: number): string => {

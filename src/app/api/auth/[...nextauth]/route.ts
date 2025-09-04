@@ -100,11 +100,13 @@ const handler = NextAuth({
       }
     },
 
+    /* eslint-disable @typescript-eslint/no-unused-vars */
     async jwt({ token, user }) {
       // Just pass through — no need for NextAuth to manage extra stuff
       return token;
     },
 
+    /* eslint-disable @typescript-eslint/no-unused-vars */
     async session({ session, token }) {
       // You don’t actually need NextAuth’s session anymore
       return session;

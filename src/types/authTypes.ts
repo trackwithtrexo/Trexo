@@ -73,3 +73,8 @@ export interface TokenData {
   iat: number;
   exp: number;
 }
+
+export interface changepassword {
+  password: string;
+  confirmPassword?: string;
+}

@@ -1,14 +1,19 @@
 import { Token, TOKEN_STATUS } from "@/generated/prisma";
 import { ChangePassword } from "@/types/authTypes";
 import PRISMA from "@/utils/prisma";
-import { tokenVerification } from "@/validation/authValidation";
+import { TokenVerification } from "@/validation/authValidation";
 import bcrypt from "bcryptjs";
 
 export async function POST(req: Request): Promise<Response> {
   try {
-    const { token, password } = (await req.json()) as ChangePassword;
+    const { token, password, confirmPassword } =
+      (await req.json()) as ChangePassword;
 
-    tokenVerification.parse({ token, password });
+    TokenVerification.parse({
+      token,
+      password,
+      confirmPassword,
+    });
 
     const tokenData: Token | null = await PRISMA.token.findFirst({
       where: { token },
@@ -18,11 +23,11 @@ export async function POST(req: Request): Promise<Response> {
       throw new Error("Link is expired");
     }
 
-    if (tokenData.tokenStatus === TOKEN_STATUS.VALIDATE) {
+    if (tokenData.tokenStatus !== TOKEN_STATUS.VALIDATE) {
       throw new Error("Link is expired");
     }
 
-    if (tokenData.expiresIn < new Date()) {
+    if (new Date() < tokenData.expiresIn) {
       throw new Error("Link is expired");
     }
 
