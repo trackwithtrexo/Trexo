@@ -25,6 +25,7 @@ export function middleware(request: NextRequest) {
       const response = NextResponse.next();
       response.headers.set("x-user-id", userData.id);
       response.headers.set("x-user-role", userData.role);
+      /* eslint-disable @typescript-eslint/no-unused-vars */
     } catch (error) {
       return NextResponse.redirect(new URL("/auth/signin", request.url));
       // Token is invalid or expired

@@ -3,24 +3,21 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Eye, EyeOff, Loader2, Lock } from "lucide-react";
-import { useForm } from "react-hook-form";
-import { useState } from "react";
-import { toast } from "sonner";
-import Image from "next/image";
-import { useRouter,useParams } from "next/navigation";
-import { ChangePassword } from "@/types/authTypes";
-import axios from "axios";
+import { changepassword } from "@/types/authTypes";
 import { extractAxiosError } from "@/utils/helper";
+import { tokenverification } from "@/validation/authValidation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { tokenVerification } from "@/validation/authValidation";
-
-
+import axios from "axios";
+import { Eye, EyeOff, Loader2, Lock } from "lucide-react";
+import Image from "next/image";
+import { useParams, useRouter } from "next/navigation";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 
 export default function ResetPasswordPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
   const router = useRouter();
   const Params = useParams();
   const token = Params.token as string;
@@ -28,23 +25,31 @@ export default function ResetPasswordPage() {
     register,
     handleSubmit,
     watch,
-    formState: { errors,isSubmitting },
-  } = useForm<ChangePassword>({ resolver: zodResolver(tokenVerification)});
+    reset,
+    formState: { errors, isSubmitting },
+  } = useForm<changepassword>({ resolver: zodResolver(tokenverification) });
 
-  const onSubmit = async (data: ChangePassword) => {
-    console.log("ho")
+  const onSubmit = async (data: changepassword) => {
+    console.log(data);
     const toastId = toast.loading("Resetting password...");
     try {
-      setLoading(true);
-      const response= await axios.post("/api/v1/user/auth/change-password", {data,token}, {
-        withCredentials: true,
-      })
+      const response = await axios.post(
+        "/api/v1/user/auth/change-password",
+        {
+          password: data.password,
+          confirmPassword: data.confirmPassword,
+          token,
+        },
+        {
+          withCredentials: true,
+        }
+      );
       toast.success(response.data?.message, { id: toastId });
       router.push("/auth/signin");
     } catch (error) {
       toast.error(extractAxiosError(error), { id: toastId });
     } finally {
-      setLoading(false);
+      reset();
     }
   };
 
@@ -156,10 +161,10 @@ export default function ResetPasswordPage() {
               disabled={isSubmitting}
               className="w-full bg-gradient-to-r dark:text-black from-green-500 cursor-pointer to-green-600 text-white font-semibold h-9 rounded-md shadow-md hover:shadow-green-500/20 text-sm"
             >
-              {isSubmitting? (
+              {isSubmitting ? (
                 <Loader2 className="w-4 h-4 animate-spin mr-2" />
               ) : null}
-              {loading ? "Resetting..." : "Reset Password"}
+              {isSubmitting ? "Resetting..." : "Reset Password"}
             </Button>
           </form>
 

@@ -3,38 +3,39 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Mail, Loader2 } from "lucide-react";
-import { useForm } from "react-hook-form";
-import { useState } from "react";
-import { toast } from "sonner";
+import { extractAxiosError } from "@/utils/helper";
+import { emailVerification } from "@/validation/authValidation";
+import { zodResolver } from "@hookform/resolvers/zod";
+import axios from "axios";
+import { Loader2, Mail } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import axios from "axios";
-import { extractAxiosError } from "@/utils/helper";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { emailVerification } from "@/validation/authValidation";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 
 export default function ForgotPasswordPage() {
-  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const {
     register,
     handleSubmit,
-    formState: { errors },
-  } = useForm<{ email: string }>({ resolver: zodResolver(emailVerification)});
+    reset,
+    formState: { errors, isSubmitting },
+  } = useForm<{ email: string }>({ resolver: zodResolver(emailVerification) });
 
   const onSubmit = async (data: { email: string }) => {
     const toastId = toast.loading("Sending reset link...");
     try {
-      setLoading(true);
-      const response = await axios.post("/api/v1/user/auth/forgot-password", data,{withCredentials: true});
+      const response = await axios.post(
+        "/api/v1/user/auth/forgot-password",
+        data,
+        { withCredentials: true }
+      );
       toast.success(response.data?.message, { id: toastId });
-      
     } catch (error) {
       toast.error(extractAxiosError(error), { id: toastId });
     } finally {
-      setLoading(false);
+      reset();
     }
   };
 
@@ -85,13 +86,13 @@ export default function ForgotPasswordPage() {
             {/* Submit */}
             <Button
               type="submit"
-              disabled={loading}
+              disabled={isSubmitting}
               className="w-full bg-gradient-to-r cursor-pointer dark:text-black from-green-500 to-green-600 mt-3 text-white font-semibold h-10 rounded-md shadow-md hover:shadow-green-500/20 text-sm"
             >
-              {loading ? (
+              {isSubmitting ? (
                 <Loader2 className="w-4 h-4 animate-spin mr-2" />
               ) : null}
-              {loading ? "Sending..." : "Send Reset Link"}
+              {isSubmitting ? "Sending..." : "Send Reset Link"}
             </Button>
           </form>
 

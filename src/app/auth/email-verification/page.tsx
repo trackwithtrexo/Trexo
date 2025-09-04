@@ -1,13 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { CheckCircle, XCircle, RefreshCcw, ArrowLeft } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useRouter, useParams } from "next/navigation";
 import axios from "axios";
+import { ArrowLeft, CheckCircle, RefreshCcw, XCircle } from "lucide-react";
 import Image from "next/image";
-import { extractAxiosError } from "@/utils/helper";
-
+import { useParams, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export default function EmailVerificationPage() {
   const router = useRouter();
@@ -22,26 +20,26 @@ export default function EmailVerificationPage() {
   useEffect(() => {
     if (!token) return;
 
-
     const verifyEmail = async () => {
       try {
         const response = await axios.post(
-          "api/v1/user/auth/signup-verification",token,{withCredentials: true});
+          "api/v1/user/auth/signup-verification",
+          token,
+          { withCredentials: true }
+        );
         setStatus("success");
         setMessage(response.data.message);
-      } catch (error: any) {
-        if (extractAxiosError(error)) {
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
           setStatus("error");
-          setMessage(error.response.data.message);
+          setMessage(error?.response?.data?.message);
         } else {
           setStatus("error");
           setMessage("Something went wrong. Please try again.");
         }
       }
     };
-    verifyEmail()
-
-    
+    verifyEmail();
   }, [token]);
 
   return (
@@ -105,7 +103,8 @@ export default function EmailVerificationPage() {
                 onClick={() => router.push("/auth/signup")}
                 className="mt-4 flex items-center text-green-500 justify-center cursor-pointer  text-sm font-medium"
               >
-                <ArrowLeft className="w-4 h-4 mr-1 text-green-500" /> Back to Signup
+                <ArrowLeft className="w-4 h-4 mr-1 text-green-500" /> Back to
+                Signup
               </button>
             </>
           )}
