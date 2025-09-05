@@ -1,4 +1,4 @@
-import { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } from "@/config/config";
+import { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, NEXTAUTH_DEBUG } from "@/config/config";
 import { ROLE, User } from "@/generated/prisma";
 import { setCookie, tokenBuilder } from "@/utils/authUtils";
 import { Role } from "@/utils/enum";
@@ -13,6 +13,7 @@ const handler = NextAuth({
       clientSecret: GOOGLE_CLIENT_SECRET!,
     }),
   ],
+  debug: NEXTAUTH_DEBUG === "true",
   session: {
     strategy: "jwt",
   },
