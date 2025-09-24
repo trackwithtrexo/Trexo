@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/select";
 import { Scale, TrendingDown, TrendingUp, X } from "lucide-react";
 import { useEffect, useState } from "react";
+
 import {
   Area,
   AreaChart,
