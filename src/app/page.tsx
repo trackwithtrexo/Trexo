@@ -112,23 +112,29 @@ export default function Home() {
   return (
     <div className="w-full min-h-screen">
       {/* HEADER */}
-      <header className="w-full flex h-20 border-b-2 items-center px-6 lg:px-[15%]">
+     <header className="w-full flex h-16 md:h-20 border-b-2 items-center px-4 sm:px-6 lg:px-[15%]">
+        {/* Logo and Title */}
         <div className="flex items-center gap-2">
-          <Image src="/Logo.png" alt="Logo" width={60} height={20} />
-          <h1 className="text-3xl font-semibold">
+          <Image src="/Logo.png" alt="Logo" width={50} height={18} className="w-10 sm:w-12 md:w-[60px]" />
+          <h1 className="text-2xl sm:text-3xl font-semibold">
             Trex<span className="text-green-500">o</span>
           </h1>
         </div>
-        <div className="ml-auto flex items-center gap-4">
+
+        {/* Right Side Buttons */}
+        <div className="ml-auto flex items-center gap-3 sm:gap-4">
           <Darkmode />
           <Button
             onClick={() => router.push("/auth/signup")}
-            className="bg-green-500 hover:bg-green-500 cursor-pointer hover:scale-105 hover:shadow-lg hover:shadow-green-800 text-white flex items-center gap-2"
+            className="bg-green-500 hover:bg-green-500 cursor-pointer hover:scale-105 hover:shadow-lg hover:shadow-green-800 text-white text-sm sm:text-base px-3 sm:px-4 py-1.5 sm:py-2 flex items-center gap-1 sm:gap-2"
           >
-            Get Started now <ArrowRight />
+            <span className="hidden xs:inline">Get Started</span>
+            <span className="inline xs:hidden">Get Started</span>
+            <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
           </Button>
         </div>
       </header>
+
 
       {/* HERO */}
       <section className="w-full py-20 flex flex-col lg:flex-row items-center justify-center lg:px-[15%] gap-10">
@@ -161,7 +167,7 @@ export default function Home() {
           className="hover:scale-105 transition-all"
         >
           <Image
-            src={"/Financial_Statement_Green.svg"}
+            src={"/finance-app-1-67.svg"}
             alt="Illustration"
             width={600}
             height={400}
