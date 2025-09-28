@@ -161,7 +161,7 @@ export default function Home() {
           className="hover:scale-105 transition-all"
         >
           <Image
-            src={"/Financial_Statement_Green.svg"}
+            src={"/finance-app-1-67.svg"}
             alt="Illustration"
             width={600}
             height={400}
