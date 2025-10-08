@@ -7,59 +7,58 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
 export default function EmailVerificationPage() {
-  const searchparams = useSearchParams();
+  const searchParams = useSearchParams();
   const router = useRouter();
-  const token = searchparams.get("token");
+  const token = searchParams.get("token");
 
   const [status, setStatus] = useState<"verifying" | "success" | "error">(
     "verifying"
   );
   const [message, setMessage] = useState<string>("");
 
-  const verify = useCallback(async () => {
-    if (status === "success") return;
+  const verify = useCallback(() => {
     if (!token) {
       setStatus("error");
       setMessage("Missing verification token.");
       return;
     }
+
     setStatus("verifying");
     setMessage("");
 
-    try {
-      const res = await fetch("/api/v1/user/auth/email-verification", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token }),
-      });
-
-      const data = await res.json().catch(() => ({}));
-
-      if (!res.ok) {
+    fetch("/api/v1/user/auth/email-verification", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ token }),
+    })
+      .then(async (res) => {
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) {
+          setStatus("error");
+          setMessage(data?.error ?? "Verification failed.");
+          return;
+        }
+        setStatus("success");
+        setMessage(data?.message ?? "Your email has been verified.");
+      })
+      .catch((err) => {
+        console.error(err);
         setStatus("error");
-        setMessage(data?.error ?? "Verification failed.");
-        return;
-      }
-
-      setStatus("success");
-      setMessage(data?.message ?? "Your email has been verified.");
-    } catch (err) {
-      setStatus("error");
-      setMessage("Something went wrong. Please try again.");
-    }
-  }, [token, status]);
+        setMessage("Something went wrong. Please try again.");
+      });
+  }, [token]);
 
   useEffect(() => {
     verify();
   }, [verify]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-2 ">
+    <div className="min-h-screen flex items-center justify-center p-2">
       <Card className="w-full max-w-[380px] backdrop-blur-lg shadow-xl relative z-10">
         <CardHeader className="text-center space-y-1 pb-3 pt-6 px-4">
           <CardTitle className="flex items-center justify-center text-2xl font-bold">
             <Image
-              src="/Log o.png"
+              src="/Logo.png"
               alt="Logo"
               width={60}
               height={60}
@@ -74,12 +73,12 @@ export default function EmailVerificationPage() {
           {status === "verifying" && (
             <>
               <div className="animate-spin">
-                <RefreshCcw className="w-16 h-16 " />
+                <RefreshCcw className="w-16 h-16" />
               </div>
               <h2 className="text-xl font-bold text-green-500">
                 Verifying your email
               </h2>
-              <p className=" text-sm">
+              <p className="text-sm">
                 Please wait while we verify your email address...
               </p>
             </>
@@ -89,7 +88,7 @@ export default function EmailVerificationPage() {
             <>
               <CheckCircle className="w-16 h-16 text-green-500" />
               <h2 className="text-xl font-bold text-green-500">{message}</h2>
-              <p className=" text-sm">
+              <p className="text-sm">
                 Your email has been successfully verified. You can now use all
                 features of <span className="font-semibold">Trexo</span>.
               </p>
@@ -112,7 +111,7 @@ export default function EmailVerificationPage() {
               </p>
               <button
                 onClick={() => router.push("/auth/signup")}
-                className="mt-4 flex items-center text-green-500 justify-center cursor-pointer  text-sm font-medium"
+                className="mt-4 flex items-center text-green-500 justify-center cursor-pointer text-sm font-medium"
               >
                 <ArrowLeft className="w-4 h-4 mr-1 text-green-500" /> Back to
                 Signup

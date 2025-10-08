@@ -8,7 +8,7 @@ import { NextResponse } from "next/server";
 
 export async function POST(req: Request): Promise<Response> {
   try {
-    const { token, values } = await req.json();
+    const { token, password, confirmPassword } = await req.json();
 
     if (!token) {
       return NextResponse.json(
@@ -19,19 +19,20 @@ export async function POST(req: Request): Promise<Response> {
       );
     }
 
-    const validatedFields = NewPasswordSchema.safeParse(values);
+    const { data, error } = NewPasswordSchema.safeParse({
+      password,
+      confirmPassword,
+    });
 
-    if (validatedFields.error) {
+    if (error) {
       return NextResponse.json(
         {
           error: "Invalid Fields!",
-          details: validatedFields.error.format(),
+          details: error.format(),
         },
         { status: 400 }
       );
     }
-
-    const { password } = validatedFields.data;
 
     const existingToken = await getpasswordResetTokenByToken(token);
 
@@ -75,7 +76,7 @@ export async function POST(req: Request): Promise<Response> {
       );
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(data.password, 10);
 
     await PRISMA.user.update({
       where: {

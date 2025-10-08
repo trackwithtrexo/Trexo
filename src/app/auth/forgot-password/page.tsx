@@ -3,40 +3,58 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { extractAxiosError } from "@/utils/helper";
 import { emailVerification } from "@/validation/authValidation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import axios from "axios";
 import { Loader2, Mail } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
 export default function ForgotPasswordPage() {
   const router = useRouter();
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   const {
     register,
     handleSubmit,
     reset,
-    formState: { errors, isSubmitting },
-  } = useForm<{ email: string }>({ resolver: zodResolver(emailVerification) });
+    formState: { errors },
+  } = useForm({ resolver: zodResolver(emailVerification) });
 
-  const onSubmit = async (data: { email: string }) => {
+  const onSubmit = (data: { email: string }) => {
+    setIsSubmitting(true);
     const toastId = toast.loading("Sending reset link...");
-    try {
-      const response = await axios.post(
-        "/api/v1/user/auth/forgot-password",
-        data,
-        { withCredentials: true }
-      );
-      toast.success(response.data?.message, { id: toastId });
-    } catch (error) {
-      toast.error(extractAxiosError(error), { id: toastId });
-    } finally {
-      reset();
-    }
+
+    fetch("/api/v1/user/auth/forgot-password", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify(data),
+    })
+      .then((res) =>
+        res
+          .json()
+          .catch(() => ({}))
+          .then((json) => ({ res, json }))
+      )
+      .then(({ res, json }) => {
+        if (!res.ok) {
+          toast.error(json?.error || "Failed to send reset link.", {
+            id: toastId,
+          });
+          return;
+        }
+        toast.success(json?.message || "Reset link sent.", { id: toastId });
+      })
+      .catch(() => {
+        toast.error("Network error. Please try again.", { id: toastId });
+      })
+      .finally(() => {
+        reset();
+        setIsSubmitting(false);
+      });
   };
 
   return (
@@ -99,6 +117,7 @@ export default function ForgotPasswordPage() {
           <p className="text-center text-gray-500 dark:text-gray-400 text-xs mt-3">
             Remembered your password?{" "}
             <button
+              disabled={isSubmitting}
               className="text-green-600 hover:cursor-pointer cursor-pointer hover:text-green-500 font-semibold"
               onClick={() => router.push("/auth/signin")}
             >
