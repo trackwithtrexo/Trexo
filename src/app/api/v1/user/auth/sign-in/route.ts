@@ -1,5 +1,5 @@
 import { getUserByEmail } from "@/action/data/user";
-import { signIn } from "@/auth.config";
+import { signIn } from "@/app/api/auth/[...nextauth]/route";
 import { CLIENT_URL, SMTP_MAIL, SMTP_PASSWORD } from "@/config/config";
 import { generateVerificationToken } from "@/lib/tokens";
 import { signInSchema } from "@/validation/authValidation";
@@ -202,7 +202,7 @@ export async function POST(req: Request): Promise<Response> {
       );
     }
 
-    if (!existingUser.emailVerified) {
+    if (existingUser.emailVerified === null) {
       const verificationToken = await generateVerificationToken(
         existingUser.email
       );
@@ -221,30 +221,30 @@ export async function POST(req: Request): Promise<Response> {
         { status: 201 }
       );
     }
+    // if (existingUser.email) {
+    //   try {
+    //     const verificationToken = await generateVerificationToken(
+    //       existingUser.email
+    //     );
+    //     await sendVerificationEmail(
+    //       verificationToken.email,
+    //       verificationToken.token,
+    //       existingUser.name
+    //     );
+    //   } catch (error) {
+    //     console.error("Test email failed:", error);
+    //   }
 
-    if (!existingUser.isTwoFactorEnable && existingUser.email) {
-      try {
-        const verificationToken = await generateVerificationToken(
-          existingUser.email
-        );
-        await sendVerificationEmail(
-          verificationToken.email,
-          verificationToken.token,
-          existingUser.name
-        );
-      } catch (error) {
-        console.error("Test email failed:", error);
-      }
+    //   return NextResponse.json(
+    //     { message: "Confirmation email sent!" },
+    //     { status: 201 }
+    //   );
+    // }
 
-      return NextResponse.json(
-        { message: "Confirmation email sent!" },
-        { status: 201 }
-      );
-    }
-
-    await signIn("Credentials", {
+    await signIn("credentials", {
       email,
       password,
+      redirect: false,
     });
 
     return NextResponse.json(
@@ -252,6 +252,7 @@ export async function POST(req: Request): Promise<Response> {
       { status: 200 }
     );
   } catch (error) {
+    console.log(error);
     return NextResponse.json(
       { error: "Internal Server Error" },
       { status: 500 }

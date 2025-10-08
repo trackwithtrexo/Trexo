@@ -1,6 +1,6 @@
 "use server";
 import { getUserByEmail } from "@/action/data/user";
-import { CLIENT_URL } from "@/config/config";
+import { CLIENT_URL, SMTP_MAIL, SMTP_PASSWORD } from "@/config/config";
 import { generatePasswordResetToken } from "@/lib/tokens";
 import { ResetSchema } from "@/validation/authValidation";
 import { NextResponse } from "next/server";
@@ -16,13 +16,13 @@ const sendPasswordResetEmail = async (
   const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
-      user: process.env.EMAIL,
-      pass: process.env.PASSWORD,
+      user: SMTP_MAIL,
+      pass: SMTP_PASSWORD,
     },
   });
 
   const mailOptions = {
-    from: process.env.EMAIL,
+    from: SMTP_MAIL,
     to: email,
     subject: "Reset Your Spendwise Password",
     html: `<!DOCTYPE html>
@@ -199,13 +199,13 @@ export async function POST(req: Request): Promise<Response> {
     const passwordResettoken = await generatePasswordResetToken(
       validatedFields.data.email
     );
-
+    
     await sendPasswordResetEmail(
       passwordResettoken.email,
       passwordResettoken.token,
       existinguser.name
     );
-
+    
     return NextResponse.json({ success: "Reset email send!" }, { status: 200 });
   } catch (error) {
     return NextResponse.json(

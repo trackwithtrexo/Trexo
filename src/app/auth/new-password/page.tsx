@@ -10,7 +10,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
 import { Eye, EyeOff, Loader2, Lock } from "lucide-react";
 import Image from "next/image";
-import { useParams, useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -19,8 +19,8 @@ export default function ResetPasswordPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const router = useRouter();
-  const Params = useParams();
-  const token = Params.token as string;
+  const searchParams = useSearchParams();
+  const token = searchParams.get("token");
   const {
     register,
     handleSubmit,
@@ -30,27 +30,42 @@ export default function ResetPasswordPage() {
   } = useForm<changepassword>({ resolver: zodResolver(tokenverification) });
 
   const onSubmit = async (data: changepassword) => {
-    console.log(data);
     const toastId = toast.loading("Resetting password...");
-    try {
-      const response = await axios.post(
-        "/api/v1/user/auth/change-password",
-        {
-          password: data.password,
-          confirmPassword: data.confirmPassword,
-          token,
-        },
-        {
-          withCredentials: true,
+
+    fetch("/api/v1/user/auth/change-password", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({
+        password: data.password,
+        confirmPassword: data.confirmPassword,
+        token,
+      }),
+    })
+      .then((res) =>
+        res
+          .json()
+          .catch(() => ({}))
+          .then((json) => ({ res, json }))
+      )
+      .then(({ res, json }) => {
+        if (!res.ok) {
+          toast.error(json?.error || "Failed to reset password.", {
+            id: toastId,
+          });
+          return;
         }
-      );
-      toast.success(response.data?.message, { id: toastId });
-      router.push("/auth/signin");
-    } catch (error) {
-      toast.error(extractAxiosError(error), { id: toastId });
-    } finally {
-      reset();
-    }
+        toast.success(json?.message || "Password reset successfully.", {
+          id: toastId,
+        });
+        router.push("/auth/signin");
+      })
+      .catch(() => {
+        toast.error("Network error. Please try again.", { id: toastId });
+      })
+      .finally(() => {
+        reset();
+      });
   };
 
   return (
