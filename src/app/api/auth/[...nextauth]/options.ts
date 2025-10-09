@@ -20,10 +20,10 @@ const authOptions: NextAuthConfig = {
   // Add production-specific cookie settings
   cookies: {
     sessionToken: {
-      name: `${
-        NODE_ENV === "production" ? "__Secure-" : ""
-      }next-auth.session-token`,
-      options: {
+      // name: `${
+      //   NODE_ENV === "production" ? "__Secure-" : ""
+      // }next-auth.session-token`,
+      options: {  
         httpOnly: true,
         sameSite: "lax",
         path: "/",
@@ -43,7 +43,6 @@ const authOptions: NextAuthConfig = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        console.log("1 hiiiiii");
         if (!credentials?.email || !credentials?.password) {
           throw new Error("Missing email or password");
         }

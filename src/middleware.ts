@@ -20,7 +20,7 @@ export async function middleware(req: NextRequest) {
   }
 
   // ✅ If route is protected and no token → redirect to signin
-   if (protectedRoutes.some((route) => pathname.startsWith(route))) {
+  if (protectedRoutes.some((route) => pathname.startsWith(route))) {
     if (!token) {
       const signinUrl = new URL("/auth/signin", req.url);
       // remove this line to avoid appending callbackUrl:
