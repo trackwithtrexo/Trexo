@@ -18,25 +18,20 @@ const authOptions: NextAuthConfig = {
   session: { strategy: "jwt" },
   secret: JWT_KEY,
   // Add production-specific cookie settings
-  // cookies: {
-  //   sessionToken: {
-  //     // name: `${
-  //     //   NODE_ENV === "production" ? "__Secure-" : ""
-  //     // }next-auth.session-token`,
-  //     options: {
-  //       httpOnly: true,
-  //       sameSite: "lax",
-  //       path: "/",
-  //       secure: NODE_ENV === "production", // HTTPS only in production
-  //       domain:
-  //         NODE_ENV === "production"
-  //           ? "https://trackwithtrexo.vercel.app"
-  //           : undefined,
-  //     },
-  //   },
-  // },
-  trustHost: true,
-  basePath: "/api/auth",
+  cookies: {
+    sessionToken: {
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        secure: NODE_ENV === "production",
+        domain:
+          NODE_ENV === "production"
+            ? "https://trackwithtrexo.vercel.app"
+            : "localhost",
+      },
+    },
+  },
   providers: [
     CredentialsProvider({
       name: "credentials",
