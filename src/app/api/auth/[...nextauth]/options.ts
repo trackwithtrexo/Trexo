@@ -2,7 +2,7 @@ import {
   GOOGLE_CLIENT_ID,
   GOOGLE_CLIENT_SECRET,
   JWT_KEY,
-  NODE_ENV,
+  // NODE_ENV,
 } from "@/config/config";
 import { User } from "@/generated/prisma";
 import PRISMA from "@/utils/prisma";
@@ -18,20 +18,20 @@ const authOptions: NextAuthConfig = {
   session: { strategy: "jwt" },
   secret: JWT_KEY,
   // Add production-specific cookie settings
-  cookies: {
-    sessionToken: {
-      options: {
-        httpOnly: true,
-        sameSite: "lax",
-        path: "/",
-        secure: NODE_ENV === "production",
-        domain:
-          NODE_ENV === "production"
-            ? "https://trackwithtrexo.vercel.app"
-            : "localhost",
-      },
-    },
-  },
+  // cookies: {
+  //   sessionToken: {
+  //     options: {
+  //       httpOnly: true,
+  //       sameSite: "lax",
+  //       path: "/",
+  //       secure: NODE_ENV === "production",
+  //       domain:
+  //         NODE_ENV === "production"
+  //           ? "https://trackwithtrexo.vercel.app"
+  //           : "localhost",
+  //     },
+  //   },
+  // },
   providers: [
     CredentialsProvider({
       name: "credentials",
