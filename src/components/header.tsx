@@ -26,7 +26,7 @@ export default function Header() {
           <div className="flex items-center gap-3">
             <div className="relative">
               <Image 
-                src={"/logo.png"} 
+                src={"/Logo.png"} 
                 alt="Trexo logo" 
                 height={60} 
                 width={60} 
@@ -93,7 +93,7 @@ export default function Header() {
         {/* Sidebar Header */}
         <div className="flex items-center justify-between p-6 border-b  ">
           <div className="flex items-center gap-3">
-            <Image src={"/logo.png"} alt="Trexo logo" height={45} width={45} />
+            <Image src={"/Logo.png"} alt="Trexo logo" height={45} width={45} />
             <h1 className="text-xl font-bold bg-clip-text text-transparent dark:text-white ">
               Trex<span className="bg-gradient-to-r from-green-500 to-emerald-600 bg-clip-text text-transparent">o</span>
             </h1>
