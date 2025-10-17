@@ -13,6 +13,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
 
 const authOptions: NextAuthConfig = {
+  trustHost: true,
   adapter: PrismaAdapter(PRISMA),
   session: { strategy: "jwt" },
   secret: JWT_KEY,
