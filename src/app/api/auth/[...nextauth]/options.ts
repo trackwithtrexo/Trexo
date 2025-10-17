@@ -2,7 +2,6 @@ import {
   GOOGLE_CLIENT_ID,
   GOOGLE_CLIENT_SECRET,
   JWT_KEY,
-  // NODE_ENV,
 } from "@/config/config";
 import { User } from "@/generated/prisma";
 import PRISMA from "@/utils/prisma";
