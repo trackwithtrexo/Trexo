@@ -17,21 +17,6 @@ const authOptions: NextAuthConfig = {
   adapter: PrismaAdapter(PRISMA),
   session: { strategy: "jwt" },
   secret: JWT_KEY,
-  // Add production-specific cookie settings
-  // cookies: {
-  //   sessionToken: {
-  //     options: {
-  //       httpOnly: true,
-  //       sameSite: "lax",
-  //       path: "/",
-  //       secure: NODE_ENV === "production",
-  //       domain:
-  //         NODE_ENV === "production"
-  //           ? "https://trackwithtrexo.vercel.app"
-  //           : "localhost",
-  //     },
-  //   },
-  // },
   providers: [
     CredentialsProvider({
       name: "credentials",
@@ -49,10 +34,6 @@ const authOptions: NextAuthConfig = {
         });
 
         if (!user || !user.password) throw new Error("User not found");
-
-        // if (!user.isTwoFactorEnable) {
-        //   throw new Error("2FA is not enabled for this user");
-        // }
 
         const isValid = await bcrypt.compare(
           credentials.password as string,

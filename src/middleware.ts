@@ -14,19 +14,19 @@ export async function middleware(req: NextRequest) {
 
   const { pathname } = req.nextUrl;
 
-  console.log("1", pathname);
-  console.log("2", token);
+  console.log("Middleware pathname:", pathname);
+  console.log("Middleware token:", token);
 
   // ✅ If user has a token and tries to access /auth pages → redirect to dashboard
   if (token && authRoutes.some((route) => pathname.startsWith(route))) {
-    console.log("4", token);
+    console.log("Middleware token exists:", token);
     return NextResponse.redirect(new URL("/dashboard", req.url));
   }
 
   // ✅ If route is protected and no token → redirect to signin
   if (protectedRoutes.some((route) => pathname.startsWith(route))) {
     if (!token) {
-      console.log("5", token);
+      console.log("Middleware no token:", token);
       const signinUrl = new URL("/auth/signin", req.url);
       // remove this line to avoid appending callbackUrl:
       // signinUrl.searchParams.set("callbackUrl", pathname);
