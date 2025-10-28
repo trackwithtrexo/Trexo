@@ -1,7 +1,19 @@
-import { CLIENT_URL } from "@/config/config";
+import {
+  CLIENT_URL,
+  GOOGLE_CLIENT_ID,
+  GOOGLE_CLIENT_SECRET,
+} from "@/config/config";
 import { ApiErrorPayload } from "@/types/authTypes";
+import { OAuth2Client } from "google-auth-library";
 import axios from "axios";
 import crypto from "crypto";
+
+// CREATE GOOGLE CLIENT OBJECT FOR AUTHENTICATION AND AUTHORIZATION OF GOOGLE SIGNUP AND LOGIN
+export const client = new OAuth2Client(
+  GOOGLE_CLIENT_ID,
+  GOOGLE_CLIENT_SECRET,
+  "postmessage"
+);
 
 //*** CREATE RANDOM TOKEN ***//
 export const createRandomToken = (bytes = 64): string => {
