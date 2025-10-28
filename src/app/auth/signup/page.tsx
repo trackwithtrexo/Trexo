@@ -1,7 +1,7 @@
 "use client";
 
-import { Social } from "@/components/auth/Social";
 import { Button } from "@/components/ui/button";
+import { useGoogleLogin } from "@react-oauth/google";
 import {
   Card,
   CardDescription,
@@ -13,7 +13,7 @@ import { signUpSchema } from "@/validation/authValidation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, Loader2, Lock, Mail, User } from "lucide-react";
 import Image from "next/image";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useCallback, useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -29,14 +29,10 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { FcGoogle } from "react-icons/fc";
-import { DEFAULT_LOGIN_REDIRECT } from "@/routes";
-import { signIn } from "next-auth/react";
 import { useTheme } from "next-themes";
 
 const SignupPage = () => {
   const { theme } = useTheme();
-  const searchparams = useSearchParams();
-  const callbackUrl = searchparams.get("callbackUrl");
   const [isPending, startTransition] = useTransition();
   const [passwordStrength, setPasswordStrength] = useState({
     score: 0,
@@ -57,7 +53,6 @@ const SignupPage = () => {
   const router = useRouter();
 
   const onSubmit = (values: z.infer<typeof signUpSchema>) => {
-    setGoogleLoading(true);
     if (passwordStrength.score < 3) {
       toast.warning("Please set a stronger password");
       return;
@@ -75,8 +70,6 @@ const SignupPage = () => {
 
         const data = (await res.json()) as { message?: string; error?: string };
 
-        console.log(data);
-
         if (!res.ok) {
           toast.error(data?.error ?? "Registration failed", {
             closeButton: true,
@@ -90,12 +83,9 @@ const SignupPage = () => {
           id: loading,
         });
       } catch (err) {
-        console.log(err);
         toast.error("Network error", { closeButton: true, id: loading });
-        console.error(err);
       } finally {
         form.reset();
-        setGoogleLoading(false);
       }
     });
   };
@@ -125,16 +115,63 @@ const SignupPage = () => {
     }
   }, [passwordStrength.score]);
 
-  const onGoogleClick = async () => {
-    setGoogleLoading(true);
-    try {
-      await signIn("google", {
-        callbackUrl: callbackUrl || DEFAULT_LOGIN_REDIRECT,
+  const googleLogin = useGoogleLogin({
+    flow: "auth-code", // ✅ Use authorization code flow
+    onSuccess: async (codeResponse) => {
+      const loadingToast = toast.loading("Signing in with Google...");
+      setGoogleLoading(true);
+      try {
+        const code = codeResponse?.code;
+
+        if (!code) {
+          toast.error("No authorization code received", {
+            closeButton: true,
+            id: loadingToast,
+          });
+          return;
+        }
+
+        // ✅ Send authorization code to backend
+        const res = await fetch("/api/v1/user/auth/google-signin", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ token: code }), // ✅ Sending auth code
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          toast.error(data?.error ?? "Google sign-in failed", {
+            closeButton: true,
+            id: loadingToast,
+          });
+          return;
+        }
+
+        toast.success(data?.message ?? "Signed in with Google", {
+          closeButton: true,
+          id: loadingToast,
+        });
+        router.push("/dashboard");
+      } catch (e) {
+        toast.error("Google sign-in error", {
+          closeButton: true,
+          id: loadingToast,
+        });
+      } finally {
+        setGoogleLoading(false);
+      }
+    },
+    onError: () => {
+      toast.error("Google sign-in was cancelled or failed", {
+        closeButton: true,
       });
-    } catch (e) {
-      console.error("Error: ", e);
-    }
-    setGoogleLoading(false);
+    },
+  });
+
+  const onGoogleClick = () => {
+    if (isPending || googleLoading) return;
+    googleLogin();
   };
 
   return (
@@ -291,12 +328,12 @@ const SignupPage = () => {
         {/* Social (Google) */}
         <div className="grid grid-cols-1 w-full m-0">
           <Button
-            className="w-full h-9 m-0 p-0"
+            className="w-full h-9 m-0 p-0 cursor-pointer"
             onClick={() => onGoogleClick()}
             variant={theme == "dark" ? "ghost" : "outline"}
             disabled={isPending || googleLoading}
           >
-            {googleLoading || isPending ? (
+            {googleLoading ? (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             ) : (
               <FcGoogle className="mr-2 h-4 w-4" />

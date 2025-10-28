@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Providers from "@/app/providers";
 import "../globals.css";
 import { Toaster } from "sonner";
 import { ThemeProvider } from "@/components/theme-provider";
@@ -24,7 +23,7 @@ export default function DashboardLayout({
       disableTransitionOnChange
     >
       <Header />
-      <Providers>{children}</Providers>
+      {children}
       <Toaster position="bottom-right" />
     </ThemeProvider>
   );

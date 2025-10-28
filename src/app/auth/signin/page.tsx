@@ -3,7 +3,8 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, Loader2, Lock, Mail } from "lucide-react";
 import Image from "next/image";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
+import { useGoogleLogin } from "@react-oauth/google";
 import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -21,17 +22,13 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 
-import { DEFAULT_LOGIN_REDIRECT } from "@/routes";
 import { signInSchema } from "@/validation/authValidation";
-import { signIn } from "next-auth/react";
 import { useTheme } from "next-themes";
 import { FcGoogle } from "react-icons/fc";
 
 export default function LoginPage() {
   const router = useRouter();
   const { theme } = useTheme();
-  const searchparams = useSearchParams();
-  const callbackUrl = searchparams.get("callbackUrl");
   const [showPassword, setShowPassword] = useState(false);
   const [isPending, startTransition] = useTransition();
   const [isDisabled, setDisabled] = useState<boolean>(false);
@@ -45,7 +42,6 @@ export default function LoginPage() {
   const onSubmit = (values: z.infer<typeof signInSchema>) => {
     const loading = toast.loading("Signing in...");
     setDisabled(true);
-    setGoogleLoading(true);
 
     startTransition(async () => {
       try {
@@ -77,22 +73,68 @@ export default function LoginPage() {
         console.error(err);
       } finally {
         setDisabled(false);
-        setGoogleLoading(false);
       }
     });
   };
 
-  const onGoogleClick = async () => {
-    setGoogleLoading(true);
-    try {
-      await signIn("google", {
-        callbackUrl: callbackUrl || DEFAULT_LOGIN_REDIRECT,
-      });
-    } catch (e) {
-      console.error("Error: ", e);
-    }
+  const googleLogin = useGoogleLogin({
+    flow: "auth-code", // ✅ Use authorization code flow
+    onSuccess: async (codeResponse) => {
+      const loadingToast = toast.loading("Signing in with Google...");
+      setGoogleLoading(true);
+      try {
+        const code = codeResponse?.code;
 
-    setGoogleLoading(false);
+        if (!code) {
+          toast.error("No authorization code received", {
+            closeButton: true,
+            id: loadingToast,
+          });
+          return;
+        }
+
+        // ✅ Send authorization code to backend
+        const res = await fetch("/api/v1/user/auth/google-signin", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ token: code }), // ✅ Sending auth code
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          toast.error(data?.error ?? "Google sign-in failed", {
+            closeButton: true,
+            id: loadingToast,
+          });
+          return;
+        }
+
+        toast.success(data?.message ?? "Signed in with Google", {
+          closeButton: true,
+          id: loadingToast,
+        });
+
+        router.push("/dashboard");
+      } catch (e) {
+        toast.error("Google sign-in error", {
+          closeButton: true,
+          id: loadingToast,
+        });
+      } finally {
+        setGoogleLoading(false);
+      }
+    },
+    onError: () => {
+      toast.error("Google sign-in was cancelled or failed", {
+        closeButton: true,
+      });
+    },
+  });
+
+  const onGoogleClick = () => {
+    if (isPending || googleLoading) return;
+    googleLogin();
   };
 
   return (
@@ -192,7 +234,7 @@ export default function LoginPage() {
               <Button
                 type="submit"
                 disabled={isDisabled || googleLoading}
-                className="w-full bg-gradient-to-r dark:text-black from-green-500 to-green-600 hover:scale-105 text-white font-semibold h-9 rounded-md shadow-md hover:shadow-green-500/20 text-sm"
+                className="w-full bg-gradient-to-r cursor-pointer dark:text-black from-green-500 to-green-600 hover:scale-105 text-white font-semibold h-9 rounded-md shadow-md hover:shadow-green-500/20 text-sm"
               >
                 {isDisabled ? (
                   <>
@@ -214,19 +256,19 @@ export default function LoginPage() {
             </form>
           </Form>
           {/* <div className="grid grid-cols-1 w-full"> */}
-            <Button
-              className="my-3 w-full mb-2"
-              onClick={() => onGoogleClick()}
-              variant={theme == "dark" ? "ghost" : "outline"}
-              disabled={isDisabled || googleLoading}
-            >
-              {googleLoading || isDisabled ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              ) : (
-                <FcGoogle className="mr-2 h-4 w-4" />
-              )}
-              Google
-            </Button>
+          <Button
+            className="my-3 w-full mb-2 cursor-pointer"
+            onClick={() => onGoogleClick()}
+            variant={theme == "dark" ? "ghost" : "outline"}
+            disabled={isDisabled || googleLoading}
+          >
+            {googleLoading ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <FcGoogle className="mr-2 h-4 w-4" />
+            )}
+            Google
+          </Button>
           {/* </div> */}
 
           <p className="text-center text-gray-500 dark:text-gray-400 text-xs mt-3">

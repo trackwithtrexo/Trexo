@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
-import Providers from "@/app/providers";
 import { Geist } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "sonner";
+import { GoogleOAuthProvider } from "@react-oauth/google";
 import { ThemeProvider } from "@/components/theme-provider";
+import { GOOGLE_CLIENT_ID } from "@/config/config";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,7 +31,9 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <Providers>{children}</Providers>
+          <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+            {children}
+          </GoogleOAuthProvider>
           <Toaster position="bottom-right" />
         </ThemeProvider>
       </body>

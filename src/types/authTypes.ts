@@ -1,4 +1,4 @@
-import { EmailType, Role, TokenType } from "@/utils/enum";
+import { EmailType,  TokenType } from "@/utils/enum";
 
 //*** SIGN IN ***//
 export interface SignIn {
@@ -41,7 +41,6 @@ export interface ChangePassword {
 
 export interface JWTPayload {
   id: string;
-  role: string;
   tokenType: string;
 }
 
@@ -69,9 +68,6 @@ export interface ApiErrorPayload {
 //*** TOKEN DATA ***//
 export interface TokenData {
   id: string;
-  role: Role;
-  iat: number;
-  exp: number;
 }
 
 export interface changepassword {

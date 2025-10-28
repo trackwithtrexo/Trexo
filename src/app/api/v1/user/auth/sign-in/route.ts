@@ -1,7 +1,7 @@
 import { getUserByEmail } from "@/action/data/user";
-import { signIn } from "@/app/api/auth/[...nextauth]/route";
 import { CLIENT_URL, SMTP_MAIL, SMTP_PASSWORD } from "@/config/config";
 import { generateVerificationToken } from "@/lib/tokens";
+import { setCookie, tokenBuilder } from "@/utils/authUtils";
 import { signInSchema } from "@/validation/authValidation";
 import bcrypt from "bcryptjs";
 import { NextResponse } from "next/server";
@@ -241,10 +241,12 @@ export async function POST(req: Request): Promise<Response> {
     //   );
     // }
 
-    await signIn("credentials", {
-      email,
-      password,
-      redirect: false,
+    const token = await tokenBuilder({ id: existingUser.id });
+
+    await setCookie({
+      key: "trackwithtrexo",
+      data: token.accessToken,
+      maxDays: 60 * 60 * 24,
     });
 
     return NextResponse.json(
