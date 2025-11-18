@@ -69,7 +69,7 @@ export default function Dashboard() {
   });
 
   // Auto-select category based on description
-  const suggestCategory = (description) => {
+  const suggestCategory = (description : string) => {
     const lowerDesc = description.toLowerCase();
 
     for (const category of expenseCategories) {
