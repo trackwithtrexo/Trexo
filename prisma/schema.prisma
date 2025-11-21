@@ -19,12 +19,12 @@ model User {
   isTwoFactorEnable Boolean   @default(false)
   accounts          Account[]
   // categories            Category[]
-  // expenses              Expense[]
+  expenses          Expense[]
   // expenseSplits         ExpenseSplit[]         @relation("ExpenseSplits")
   // createdGroups         Group[]                @relation("GroupCreator")
   // paidExpenses          GroupExpense[]         @relation("PaidExpenses")
   // groupMemberships      GroupMember[]
-  // incomes               Income[]
+  incomes           Income[]
   // joinRequests          JoinRequest[]
   // pushSubscriptions     PushSubscription[]
   // recurringTransactions RecurringTransaction[]
@@ -82,28 +82,28 @@ model Account {
 //   @@index([userId, category])
 // }
 
-// model Income {
-//   id          String   @id @default(cuid())
-//   userId      String
-//   amount      Decimal
-//   date        DateTime
-//   description String?
-//   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+model Income {
+  id          String   @id @default(cuid())
+  userId      String
+  amount      Decimal
+  date        DateTime
+  description String?
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-//   @@index([userId, date])
-// }
+  @@index([userId, date])
+}
 
-// model Expense {
-//   id          String        @id @default(cuid())
-//   userId      String
-//   category    CategoryTypes
-//   amount      Decimal
-//   date        DateTime
-//   description String?
-//   user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+model Expense {
+  id          String        @id @default(cuid())
+  userId      String
+  category    CategoryTypes
+  amount      Decimal
+  date        DateTime
+  description String?
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-//   @@index([userId, category, date])
-// }
+  @@index([userId, category, date])
+}
 
 // model PushSubscription {
 //   id       String @id @default(cuid())

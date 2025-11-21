@@ -1,6 +1,7 @@
 "use client";
 import { CalendarForm } from "@/components/calendar-02";
 import Calendar05 from "@/components/calendar-05";
+import NewIncome from "@/components/Newincome";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -18,7 +19,6 @@ import {
 } from "@/components/ui/select";
 import { Scale, TrendingDown, TrendingUp, X } from "lucide-react";
 import { useEffect, useState } from "react";
-import { expenseCategories } from "../../../utils/enum";
 import {
   Area,
   AreaChart,
@@ -33,6 +33,10 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import { expenseCategories } from "../../../utils/enum";
+import { DatePickerWithRange } from "@/components/ui/DateRangePicker";
+import DateSelect from "@/components/DateSelect";
+
 
 const monthlyData = [
   { month: "Apr 2025", income: 5000, expenses: 3000 },
@@ -92,18 +96,10 @@ const expenseConfig = {
   },
 };
 
-export default function Dashboardpage() {
+export default  function Dashboard() {
   const [transactionChartType, setTransactionChartType] = useState("Bar Chart");
   const [expenseChartType, setExpenseChartType] = useState("Pie Chart");
-  const [showIncomeModal, setShowIncomeModal] = useState(false);
   const [showExpenseModal, setShowExpenseModal] = useState(false);
-
-  // Form states
-  const [incomeForm, setIncomeForm] = useState({
-    amount: "",
-    description: "",
-    date: new Date().toISOString().split("T")[0],
-  });
 
   const [expenseForm, setExpenseForm] = useState({
     amount: "",
@@ -129,7 +125,7 @@ export default function Dashboardpage() {
       const suggestedCategory = suggestCategory(expenseForm.description);
       setExpenseForm((prev) => ({ ...prev, category: suggestedCategory }));
     }
-    if (showIncomeModal || showExpenseModal) {
+    if (showExpenseModal) {
       document.body.style.overflow = "hidden"; // disable scroll
     } else {
       document.body.style.overflow = ""; // restore scroll
@@ -138,17 +134,7 @@ export default function Dashboardpage() {
     return () => {
       document.body.style.overflow = "";
     };
-  }, [expenseForm.description, showIncomeModal, showExpenseModal]);
-
-  const handleIncomeSubmit = () => {
-    console.log("Income transaction:", incomeForm);
-    setIncomeForm({
-      amount: "",
-      description: "",
-      date: new Date().toISOString().split("T")[0],
-    });
-    setShowIncomeModal(false);
-  };
+  }, [expenseForm.description, showExpenseModal]);
 
   const handleExpenseSubmit = () => {
     console.log("Expense transaction:", expenseForm);
@@ -295,18 +281,14 @@ export default function Dashboardpage() {
         <div className="flex flex-col lg:flex-row lg:items-center gap-4 mt-6">
           {/* Calendar full width on mobile */}
           <div className="w-full lg:w-auto">
-            <Calendar05 />
+            {/* <Calendar05 /> */}
+            {/* <DatePickerWithRange /> */}
+            {/* <DateSelect /> */}
           </div>
 
           {/* Buttons */}
           <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto lg:ml-auto">
-            <Button
-              onClick={() => setShowIncomeModal(true)}
-              className="bg-green-500 text-white hover:bg-green-600 w-full sm:w-auto flex items-center justify-center"
-            >
-              <TrendingUp className="w-5 h-5 mr-2" />
-              Add income
-            </Button>
+            <NewIncome />
             <Button
               onClick={() => setShowExpenseModal(true)}
               className="bg-red-500 text-white hover:bg-red-600 w-full sm:w-auto flex items-center justify-center"
@@ -450,73 +432,6 @@ export default function Dashboardpage() {
           </Card>
         </div>
       </section>
-
-      {/* Income Modal */}
-      {showIncomeModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center  justify-center z-50 p-4">
-          <Card className="w-full max-w-md border border-border">
-            <CardHeader className="flex flex-row items-center justify-between pb-4">
-              <CardTitle className="text-xl text-foreground">
-                Create a new <span className="text-green-500">income</span>{" "}
-                transaction
-              </CardTitle>
-              <Button
-                onClick={() => setShowIncomeModal(false)}
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8"
-              >
-                <X className="w-4 h-4" />
-              </Button>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium mb-2 text-foreground">
-                  Amount
-                </label>
-                <Input
-                  type="number"
-                  placeholder="Enter amount"
-                  value={incomeForm.amount}
-                  onChange={(e) =>
-                    setIncomeForm({ ...incomeForm, amount: e.target.value })
-                  }
-                  className="w-full px-3 py-2 border border-input bg-background rounded-lg focus:outline-none focus:ring-2 focus:ring-ring text-foreground placeholder:text-muted-foreground"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium mb-2 text-foreground">
-                  Description (Optional)
-                </label>
-                <Input
-                  type="text"
-                  placeholder="Enter description"
-                  value={incomeForm.description}
-                  onChange={(e) =>
-                    setIncomeForm({
-                      ...incomeForm,
-                      description: e.target.value,
-                    })
-                  }
-                  className="w-full px-3 py-2 border border-input bg-background rounded-lg focus:outline-none focus:ring-2 focus:ring-ring text-foreground placeholder:text-muted-foreground"
-                />
-              </div>
-
-              <div>
-                <CalendarForm />
-              </div>
-
-              <Button
-                onClick={handleIncomeSubmit}
-                className="w-full bg-green-500 hover:bg-green-600 text-white mt-6"
-              >
-                Add new income
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
-      )}
 
       {/* Expense Modal */}
       {showExpenseModal && (

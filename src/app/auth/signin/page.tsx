@@ -56,6 +56,7 @@ export default function LoginPage() {
         if (!res.ok) {
           toast.error(data?.error ?? "Sign in failed", {
             id: loading,
+            richColors: true,
             closeButton: true,
           });
           return;
@@ -64,6 +65,7 @@ export default function LoginPage() {
         toast.success(data?.message ?? "Signed in successfully", {
           id: loading,
           closeButton: true,
+          richColors: true,
         });
 
         form.reset();
@@ -119,6 +121,7 @@ export default function LoginPage() {
       } catch (e) {
         toast.error("Google sign-in error", {
           closeButton: true,
+          richColors: true,
           id: loadingToast,
         });
       } finally {
@@ -239,11 +242,13 @@ export default function LoginPage() {
                 {isDisabled ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-1 animate-spin" />
-                    Logging in...
                   </>
                 ) : (
-                  "Login"
+                  <>
+                    <Mail />
+                  </>
                 )}
+                Login With Mail
               </Button>
 
               <div className="flex items-center gap-2">
