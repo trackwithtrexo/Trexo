@@ -1,0 +1,269 @@
+// "use client";
+
+// import { useRouter, useSearchParams } from "next/navigation";
+// import { DateRange } from "react-day-picker";
+// import { useState, useEffect, useCallback, useRef } from "react";
+// import { format, parseISO } from "date-fns";
+// import { DatePickerWithRange } from "@/components/ui/DateRangePicker";
+
+// const DateSelect = () => {
+//   const router = useRouter();
+//   const searchParams = useSearchParams();
+//   const [dateRange, setDateRange] = useState<DateRange | undefined>();
+//   const [isInitialized, setIsInitialized] = useState(false);
+//   const [hasFetchedJoinDate, setHasFetchedJoinDate] = useState(false);
+//   const prevUrlParamsRef = useRef<string>("");
+
+//   // Sync with URL params when they change (for browser back/forward)
+//   useEffect(() => {
+//     const startDate = searchParams.get("startDate");
+//     const endDate = searchParams.get("endDate");
+//     const urlParamsKey = `${startDate}-${endDate}`;
+
+//     if (
+//       startDate &&
+//       endDate &&
+//       isInitialized &&
+//       urlParamsKey !== prevUrlParamsRef.current
+//     ) {
+//       prevUrlParamsRef.current = urlParamsKey;
+//       try {
+//         const from = parseISO(startDate);
+//         const to = parseISO(endDate);
+//         setDateRange({ from, to });
+//       } catch (error) {
+//         console.error("Error parsing URL dates:", error);
+//       }
+//     }
+//   }, [searchParams, isInitialized]);
+
+//   // Initialize: sync with URL params OR fetch join date
+//   useEffect(() => {
+//     if (isInitialized) return;
+
+//     const startDate = searchParams.get("startDate");
+//     const endDate = searchParams.get("endDate");
+
+//     // If URL params exist, use them
+//     if (startDate && endDate) {
+//       try {
+//         const from = parseISO(startDate);
+//         const to = parseISO(endDate);
+//         setDateRange({ from, to });
+//         prevUrlParamsRef.current = `${startDate}-${endDate}`;
+//         setIsInitialized(true);
+//         return;
+//       } catch (error) {
+//         console.error("Error parsing URL dates:", error);
+//       }
+//     }
+
+//     // Otherwise, fetch join date and set URL params (only once)
+//     if (!hasFetchedJoinDate) {
+//       setHasFetchedJoinDate(true);
+//       const fetchJoininDate = async () => {
+//         try {
+//           const response = await fetch("/api/v1/user/joinin-date", {
+//             method: "GET",
+//             cache: "no-store",
+//           });
+//           const data = await response.json();
+
+//           if (data.userData?.emailVerified) {
+//             const joininDate = parseISO(data.userData.emailVerified);
+//             const newRange = { from: joininDate, to: new Date() };
+//             setDateRange(newRange);
+
+//             const formattedStartDate = format(joininDate, "yyyy-MM-dd");
+//             const formattedEndDate = format(new Date(), "yyyy-MM-dd");
+
+//             router.push(
+//               `?startDate=${formattedStartDate}&endDate=${formattedEndDate}`,
+//               { scroll: false }
+//             );
+//             prevUrlParamsRef.current = `${formattedStartDate}-${formattedEndDate}`;
+//             setIsInitialized(true);
+//           }
+//         } catch (error) {
+//           console.error("Error fetching joinin date:", error);
+//         }
+//       };
+
+//       fetchJoininDate();
+//     }
+//   }, [router, searchParams, isInitialized, hasFetchedJoinDate]);
+
+//   const handleDateRangeChange = useCallback(
+//     (newDateRange: DateRange | undefined) => {
+//       if (newDateRange?.from && newDateRange?.to) {
+//         // Normalize the range
+//         if (!newDateRange.from) newDateRange.from = newDateRange.to;
+//         if (!newDateRange.to) newDateRange.to = newDateRange.from;
+
+//         setDateRange(newDateRange);
+
+//         const formattedStartDate = format(newDateRange.from, "yyyy-MM-dd");
+//         const formattedEndDate = format(newDateRange.to, "yyyy-MM-dd");
+
+//         // Only update URL if dates actually changed
+//         const currentStart = searchParams.get("startDate");
+//         const currentEnd = searchParams.get("endDate");
+
+//         if (
+//           currentStart !== formattedStartDate ||
+//           currentEnd !== formattedEndDate
+//         ) {
+//           router.push(
+//             `?startDate=${formattedStartDate}&endDate=${formattedEndDate}`,
+//             { scroll: false }
+//           );
+//         }
+//       }
+//     },
+//     [router, searchParams]
+//   );
+
+//   return (
+//     <DatePickerWithRange
+//       onDateRangeChange={handleDateRangeChange}
+//       defaultDateRange={dateRange}
+//     />
+//   );
+// };
+
+// export default DateSelect;
+
+// "use client";
+
+// import { useRouter, useSearchParams } from "next/navigation";
+// import { DateRange } from "react-day-picker";
+// import { useState, useEffect, useCallback, useRef } from "react";
+// import { format, parseISO } from "date-fns";
+// import { DatePickerWithRange } from "@/components/ui/DateRangePicker";
+
+// const DateSelect = () => {
+//   const router = useRouter();
+//   const searchParams = useSearchParams();
+//   const [dateRange, setDateRange] = useState<DateRange | undefined>();
+//   const [isInitialized, setIsInitialized] = useState(false);
+//   const [hasFetchedJoinDate, setHasFetchedJoinDate] = useState(false);
+//   const prevUrlParamsRef = useRef<string>("");
+
+//   // Sync with URL params when they change (for browser back/forward)
+//   useEffect(() => {
+//     const startDate = searchParams.get("startDate");
+//     const endDate = searchParams.get("endDate");
+//     const urlParamsKey = `${startDate}-${endDate}`;
+
+//     if (
+//       startDate &&
+//       endDate &&
+//       isInitialized &&
+//       urlParamsKey !== prevUrlParamsRef.current
+//     ) {
+//       prevUrlParamsRef.current = urlParamsKey;
+//       try {
+//         const from = parseISO(startDate);
+//         const to = parseISO(endDate);
+//         setDateRange({ from, to });
+//       } catch (error) {
+//         console.error("Error parsing URL dates:", error);
+//       }
+//     }
+//   }, [searchParams, isInitialized]);
+
+//   // Initialize: sync with URL params OR fetch join date
+//   useEffect(() => {
+//     if (isInitialized) return;
+
+//     const startDate = searchParams.get("startDate");
+//     const endDate = searchParams.get("endDate");
+
+//     // If URL params exist, use them
+//     if (startDate && endDate) {
+//       try {
+//         const from = parseISO(startDate);
+//         const to = parseISO(endDate);
+//         setDateRange({ from, to });
+//         prevUrlParamsRef.current = `${startDate}-${endDate}`;
+//         setIsInitialized(true);
+//         return;
+//       } catch (error) {
+//         console.error("Error parsing URL dates:", error);
+//       }
+//     }
+
+//     // Otherwise, fetch join date and set URL params (only once)
+//     if (!hasFetchedJoinDate) {
+//       setHasFetchedJoinDate(true);
+//       const fetchJoininDate = async () => {
+//         try {
+//           const response = await fetch("/api/v1/user/joinin-date", {
+//             method: "GET",
+//             cache: "no-store",
+//           });
+//           const data = await response.json();
+
+//           if (data.userData?.emailVerified) {
+//             const joininDate = parseISO(data.userData.emailVerified);
+//             const newRange = { from: joininDate, to: new Date() };
+//             setDateRange(newRange);
+
+//             const formattedStartDate = format(joininDate, "yyyy-MM-dd");
+//             const formattedEndDate = format(new Date(), "yyyy-MM-dd");
+
+//             router.push(
+//               `?startDate=${formattedStartDate}&endDate=${formattedEndDate}`,
+//               { scroll: false }
+//             );
+//             prevUrlParamsRef.current = `${formattedStartDate}-${formattedEndDate}`;
+//             setIsInitialized(true);
+//           }
+//         } catch (error) {
+//           console.error("Error fetching joinin date:", error);
+//         }
+//       };
+
+//       fetchJoininDate();
+//     }
+//   }, [router, searchParams, isInitialized, hasFetchedJoinDate]);
+
+//   const handleDateRangeChange = useCallback(
+//     (newDateRange: DateRange | undefined) => {
+//       if (newDateRange?.from && newDateRange?.to) {
+//         // Normalize the range
+//         if (!newDateRange.from) newDateRange.from = newDateRange.to;
+//         if (!newDateRange.to) newDateRange.to = newDateRange.from;
+
+//         setDateRange(newDateRange);
+
+//         const formattedStartDate = format(newDateRange.from, "yyyy-MM-dd");
+//         const formattedEndDate = format(newDateRange.to, "yyyy-MM-dd");
+
+//         // Only update URL if dates actually changed
+//         const currentStart = searchParams.get("startDate");
+//         const currentEnd = searchParams.get("endDate");
+
+//         if (
+//           currentStart !== formattedStartDate ||
+//           currentEnd !== formattedEndDate
+//         ) {
+//           router.push(
+//             `?startDate=${formattedStartDate}&endDate=${formattedEndDate}`,
+//             { scroll: false }
+//           );
+//         }
+//       }
+//     },
+//     [router, searchParams]
+//   );
+
+//   return (
+//     <DatePickerWithRange
+//       onDateRangeChange={handleDateRangeChange}
+//       defaultDateRange={dateRange}
+//     />
+//   );
+// };
+
+// export default DateSelect;

@@ -72,6 +72,7 @@ const SignupPage = () => {
 
         if (!res.ok) {
           toast.error(data?.error ?? "Registration failed", {
+            richColors: true,
             closeButton: true,
             id: loading,
           });
@@ -79,11 +80,16 @@ const SignupPage = () => {
         }
 
         toast.success(data?.message ?? "Registered", {
+          richColors: true,
           closeButton: true,
           id: loading,
         });
       } catch (err) {
-        toast.error("Network error", { closeButton: true, id: loading });
+        toast.error("Network error", {
+          closeButton: true,
+          id: loading,
+          richColors: true,
+        });
       } finally {
         form.reset();
       }
@@ -125,6 +131,7 @@ const SignupPage = () => {
 
         if (!code) {
           toast.error("No authorization code received", {
+            richColors: true,
             closeButton: true,
             id: loadingToast,
           });
@@ -142,6 +149,7 @@ const SignupPage = () => {
 
         if (!res.ok) {
           toast.error(data?.error ?? "Google sign-in failed", {
+            richColors: true,
             closeButton: true,
             id: loadingToast,
           });
@@ -149,12 +157,14 @@ const SignupPage = () => {
         }
 
         toast.success(data?.message ?? "Signed in with Google", {
+          richColors: true,
           closeButton: true,
           id: loadingToast,
         });
         router.push("/dashboard");
       } catch (e) {
         toast.error("Google sign-in error", {
+          richColors: true,
           closeButton: true,
           id: loadingToast,
         });
@@ -164,6 +174,7 @@ const SignupPage = () => {
     },
     onError: () => {
       toast.error("Google sign-in was cancelled or failed", {
+        richColors: true,
         closeButton: true,
       });
     },
@@ -307,11 +318,11 @@ const SignupPage = () => {
               {isPending ? (
                 <>
                   <Loader2 className="w-4 h-4 mr-1 animate-spin" />
-                  Creating...
                 </>
               ) : (
-                "Create Account"
+                <Mail />
               )}
+              Register
             </Button>
           </form>
         </Form>

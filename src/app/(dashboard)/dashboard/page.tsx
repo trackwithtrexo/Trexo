@@ -1,5 +1,6 @@
 "use client";
 import Calendar05 from "@/components/calendar-05";
+import NewIncome from "@/components/Newincome";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import IncomeExpenseChart from '@/components/income_and_expense_chart';
@@ -51,15 +52,7 @@ const expenseCategories = [
 export default function Dashboard() {
   const [transactionChartType, setTransactionChartType] = useState("Bar Chart");
   const [expenseChartType, setExpenseChartType] = useState("Pie Chart");
-  const [showIncomeModal, setShowIncomeModal] = useState(false);
   const [showExpenseModal, setShowExpenseModal] = useState(false);
-
-  // Form states
-  const [incomeForm, setIncomeForm] = useState({
-    amount: "",
-    description: "",
-    date: new Date().toISOString().split("T")[0],
-  });
 
   const [expenseForm, setExpenseForm] = useState({
     amount: "",
@@ -94,17 +87,7 @@ export default function Dashboard() {
     return () => {
       document.body.style.overflow = "";
     };
-  }, [expenseForm.description, showIncomeModal, showExpenseModal]);
-
-  const handleIncomeSubmit = () => {
-    console.log("Income transaction:", incomeForm);
-    setIncomeForm({
-      amount: "",
-      description: "",
-      date: new Date().toISOString().split("T")[0],
-    });
-    setShowIncomeModal(false);
-  };
+  }, [expenseForm.description, showExpenseModal]);
 
   const handleExpenseSubmit = () => {
     console.log("Expense transaction:", expenseForm);
