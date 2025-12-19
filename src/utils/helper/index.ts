@@ -7,6 +7,8 @@ import { ApiErrorPayload } from "@/types/authTypes";
 import { OAuth2Client } from "google-auth-library";
 import axios from "axios";
 import crypto from "crypto";
+import { expenseCategories } from "@/utils/enum/index";
+import { CategoryTypes } from "@/generated/prisma";
 
 // CREATE GOOGLE CLIENT OBJECT FOR AUTHENTICATION AND AUTHORIZATION OF GOOGLE SIGNUP AND LOGIN
 export const client = new OAuth2Client(
@@ -54,6 +56,8 @@ export const createLink = (token: string, type: string): string => {
 //       : new Error("Failed to create verification token");
 //   }
 // };
+
+
 
 export function extractAxiosError(e: unknown): string {
   if (axios.isAxiosError(e)) {

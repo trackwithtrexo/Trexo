@@ -16,7 +16,27 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 
-const expenseConfig = {
+type ChartType = "Bar Chart" | "Pie Chart";
+
+type ExpenseBarDatum = {
+  category: string;
+  amount: number;
+  color: string;
+};
+
+type ExpensePieDatum = {
+  name: string;
+  value: number;
+  color: string;
+};
+
+interface ExpenseBreakdownChartProps {
+  chartType: ChartType;
+  barData: ExpenseBarDatum[];
+  pieData: ExpensePieDatum[];
+}
+
+const expenseConfig: Record<string, { label: string; color: string }> = {
   food: { label: "Food", color: "#3b82f6" },
   shopping: { label: "Shopping", color: "#ef4444" },
   grocery: { label: "Grocery", color: "#eab308" },
@@ -27,7 +47,7 @@ export default function ExpenseBreakdownChart({
   chartType,
   barData,
   pieData,
-}) {
+}: ExpenseBreakdownChartProps) {
   if (chartType === "Bar Chart") {
     return (
       <ChartContainer config={expenseConfig}>
@@ -36,7 +56,6 @@ export default function ExpenseBreakdownChart({
           <XAxis dataKey="category" className="stroke-muted-foreground" />
           <YAxis className="stroke-muted-foreground" />
           <ChartTooltip content={<ChartTooltipContent />} />
-
           <Bar dataKey="amount" radius={[4, 4, 0, 0]}>
             {barData.map((entry, i) => (
               <Cell key={i} fill={entry.color} />
