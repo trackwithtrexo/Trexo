@@ -1,31 +1,58 @@
 import { loginUser } from "@/app/action/auth-action";
-import DateSelect from "@/components/DateSelect";
+import DatePicker from "@/components/DatePicker";
 import { format, subMonths } from "date-fns";
+import { headers } from "next/headers";
 import { cache, Suspense } from "react";
 
+type FinancialData = {
+  expense: Array<{
+    id: string;
+    userId: string;
+    category: string;
+    amount: string;
+    date: string;
+    description: string;
+  }>;
+  income: Array<{
+    id: string;
+    userId: string;
+    amount: string;
+    date: string;
+    description: string;
+  }>;
+};
+
+// Cache the fetch - cookie is part of the cache key
 const getAllData = cache(
-  async (id: string, startDate: string, endDate: string) => {
+  async (
+    userId: string,
+    cookie: string,
+    startDate: string,
+    endDate: string
+  ): Promise<FinancialData> => {
     try {
-      // use relative API path so it works in different environments
-      const url = `/api/v1/user/allData?startDate=${encodeURIComponent(
-        startDate
-      )}&endDate=${encodeURIComponent(endDate)}`;
+      const baseUrl =
+        process.env.NEXT_PUBLIC_BASE_URL ||
+        process.env.BASE_URL ||
+        "http://localhost:3000";
 
-      console.log("1");
+      const res = await fetch(
+        `${baseUrl}/api/v1/user/allData?from=${startDate}&to=${endDate}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Cookie: cookie,
+          },
+          next: { tags: ["getAllData"] },
+          cache: "force-cache",
+        }
+      );
 
-      const res = await fetch(url, {
-        method: "GET",
-        next: {
-          tags: ["getAllData"],
-        },
-        cache: "force-cache",
-      });
-
-      if (!res.ok) throw new Error("Failed to fetch all financial data");
-
-      const data = await res.json();
-      return data;
+      if (!res.ok) throw new Error("Failed to fetch");
+      return await res.json();
     } catch (error) {
+      console.error("Error fetching all data:", error);
       return { expense: [], income: [] };
     }
   }
@@ -34,36 +61,30 @@ const getAllData = cache(
 export default async function History({
   searchParams,
 }: {
-  searchParams?:
-    | Record<string, string>
-    | Promise<Record<string, string> | undefined>;
+  searchParams: Promise<Record<string, string>>;
 }) {
+  // Get headers once at top level
+  const headersList = await headers();
+  const cookie = headersList.get("cookie") || "";
+
   const sp = (await searchParams) ?? {};
-
-  // normalize param names and provide defaults
   const startDate =
-    sp.startDate ?? sp.from ?? format(subMonths(new Date(), 1), "yyyy-MM-dd");
-  const endDate = sp.endDate ?? sp.to ?? format(new Date(), "yyyy-MM-dd");
+    sp.startDate ?? format(subMonths(new Date(), 1), "yyyy-MM-dd");
+  const endDate = sp.endDate ?? format(new Date(), "yyyy-MM-dd");
 
-  console.log("History Page - startDate:", startDate, "endDate:", endDate);
+  const user = await loginUser();
 
-  const users = "2025-10-02T05:43:59.340Z";
-
-   const user = await loginUser();
-
-  const [total] = await Promise.all([getAllData(user, startDate, endDate)]);
+  // Single fetch with cookie passed in
+  const total = await getAllData(user, cookie, startDate, endDate);
 
   console.log("History Page - total data:");
 
   return (
     <div>
-
-      hii form History
-      {/* Keep your existing UI 
       <Suspense fallback={<div>Loading date picker...</div>}>
-        <DateSelect />
+        <DatePicker />
+        hii form History
       </Suspense>
-     */ }
     </div>
   );
 }

@@ -5,11 +5,9 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { TrendingUp } from "lucide-react";
-
 import { newIncome } from "@/app/action/Dashboard-actions";
 import { IncomeFormData } from "@/types/transaction.Types";
-import { formSchema } from "@/validation/transactionValidation";
-
+import { IncomeformSchema } from "@/validation/transactionValidation";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -34,7 +32,7 @@ export default function NewIncome() {
   const [open, setOpen] = useState(false);
 
   const incomeForm = useForm<IncomeFormData>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(IncomeformSchema),
     defaultValues: {
       amount: "",
       description: "",
@@ -46,7 +44,8 @@ export default function NewIncome() {
     const toastId = toast.loading("Adding income...");
     try {
       const response = await newIncome(data);
-      if (response !== "success") throw new Error(response || "Income not added");
+      if (response !== "success")
+        throw new Error(response || "Income not added");
 
       toast.success("Income added successfully", {
         id: toastId,
@@ -59,7 +58,8 @@ export default function NewIncome() {
       setOpen(false);
       incomeForm.reset();
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Unexpected error";
+      const message =
+        error instanceof Error ? error.message : "Unexpected error";
       toast.error(`Failed to add income`, {
         id: toastId,
         richColors: true,
@@ -82,7 +82,8 @@ export default function NewIncome() {
       <DialogContent className="w-[86vw] sm:w-[350px] md:w-[390px] max-h-[84vh] overflow-y-auto rounded-md border p-4">
         <DialogHeader>
           <DialogTitle className="text-[14px] sm:text-[15px]">
-            Create a new <span className="text-green-500">income</span> transaction
+            Create a new <span className="text-green-500">income</span>{" "}
+            transaction
           </DialogTitle>
         </DialogHeader>
 
@@ -115,7 +116,9 @@ export default function NewIncome() {
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-[12px]">Description (Optional)</FormLabel>
+                  <FormLabel className="text-[12px]">
+                    Description (Optional)
+                  </FormLabel>
                   <FormControl>
                     <Input
                       placeholder="Enter description"

@@ -17,12 +17,23 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 
-const chartConfig = {
+type ChartType = "Bar Chart" | "Line Chart" | "Area Chart";
+type MonthlyDatum = { month: string; income: number; expenses: number };
+
+interface IncomeExpenseChartProps {
+  chartType: ChartType;
+  data: MonthlyDatum[];
+}
+
+const chartConfig: Record<string, { label: string; color: string }> = {
   income: { label: "Income", color: "#22c55e" },
   expenses: { label: "Expenses", color: "#3b82f6" },
 };
 
-export default function IncomeExpenseChart({ chartType, data }) {
+export default function IncomeExpenseChart({
+  chartType,
+  data,
+}: IncomeExpenseChartProps) {
   switch (chartType) {
     case "Line Chart":
       return (
@@ -32,7 +43,6 @@ export default function IncomeExpenseChart({ chartType, data }) {
             <XAxis dataKey="month" className="stroke-muted-foreground" />
             <YAxis className="stroke-muted-foreground" />
             <ChartTooltip content={<ChartTooltipContent />} />
-
             <Line
               type="monotone"
               dataKey="income"
@@ -59,7 +69,6 @@ export default function IncomeExpenseChart({ chartType, data }) {
             <XAxis dataKey="month" className="stroke-muted-foreground" />
             <YAxis className="stroke-muted-foreground" />
             <ChartTooltip content={<ChartTooltipContent />} />
-
             <Area
               type="monotone"
               dataKey="expenses"
@@ -88,7 +97,6 @@ export default function IncomeExpenseChart({ chartType, data }) {
             <XAxis dataKey="month" className="stroke-muted-foreground" />
             <YAxis className="stroke-muted-foreground" />
             <ChartTooltip content={<ChartTooltipContent />} />
-
             <Bar dataKey="income" fill="#22c55e" />
             <Bar dataKey="expenses" fill="#3b82f6" />
           </BarChart>

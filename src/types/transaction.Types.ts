@@ -1,4 +1,5 @@
 import { z } from "zod";
-import { formSchema } from "@/validation/transactionValidation";
+import { IncomeformSchema, ExpenseformSchema } from "@/validation/transactionValidation";
 
-export type IncomeFormData = z.infer<typeof formSchema>;
+export type IncomeFormData = z.infer<typeof IncomeformSchema>;
+export type ExpenseFormData = z.infer<typeof ExpenseformSchema>;
