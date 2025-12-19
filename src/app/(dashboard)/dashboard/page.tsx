@@ -28,7 +28,6 @@ type FinancialData = {
   }>;
 };
 
-// Cache the fetch - cookie is part of the cache key
 const getAllData = cache(
   async (
     userId: string,
