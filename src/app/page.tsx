@@ -112,23 +112,37 @@ export default function Home() {
   return (
     <div className="w-full min-h-screen">
       {/* HEADER */}
-      <header className="w-full flex h-20 border-b-2 items-center px-6 lg:px-[15%]">
-        <div className="flex items-center gap-2">
-          <Image src="/Logo.png" alt="Logo" width={60} height={20} />
-          <h1 className="text-3xl font-semibold">
-            Trex<span className="text-green-500">o</span>
-          </h1>
-        </div>
-        <div className="ml-auto flex items-center gap-4">
-          <Darkmode />
-          <Button
-            onClick={() => router.push("/auth/signup")}
-            className="bg-green-500 hover:bg-green-500 cursor-pointer hover:scale-105 hover:shadow-lg hover:shadow-green-800 text-white flex items-center gap-2"
-          >
-            Get Started now <ArrowRight />
-          </Button>
-        </div>
-      </header>
+      <header className="w-full flex flex-wrap items-center justify-between h-auto min-h-20 border-b px-4 sm:px-6 lg:px-[15%] py-3 gap-3">
+
+  {/* Logo Section */}
+  <div className="flex items-center gap-2">
+    <Image 
+      src="/Logo.png" 
+      alt="Logo" 
+      width={45} 
+      height={20} 
+      className="sm:w-[55px]"
+    />
+    <h1 className="text-2xl sm:text-3xl font-semibold whitespace-nowrap">
+      Trex<span className="text-green-500">o</span>
+    </h1>
+  </div>
+
+  {/* Right Section */}
+  <div className="flex items-center gap-3 ml-auto">
+    <Darkmode />
+
+    <Button
+      onClick={() => router.push("/auth/signup")}
+      className="bg-green-500 hover:bg-green-600 text-white text-sm sm:text-base px-4 sm:px-6 py-2 rounded-lg transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-green-500/40 flex items-center gap-2"
+    >
+      <span className="hidden sm:inline">Get Started Now</span>
+      <span className="sm:hidden">Start</span>
+      <ArrowRight size={18} />
+    </Button>
+  </div>
+</header>
+
 
       {/* HERO */}
       <section className="w-full py-20 flex flex-col lg:flex-row items-center justify-center lg:px-[15%] gap-10">

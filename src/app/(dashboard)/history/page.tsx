@@ -119,35 +119,51 @@ export default async function History({
     ...STATIC_DATA.expense.map((e) => ({ ...e, type: "expense" })),
   ].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
-  return (
-  <div className="w-[80%] mx-auto py-8 space-y-10 min-h-screen max-w-none px-0">
-    {/* Header Section: Added horizontal padding so text doesn't touch the 80% edge */}
-    <div className="flex flex-col md:flex-row justify-between items-center gap-6 px-4">
+return (
+  <div className="w-[90%] lg:w-[80%] mx-auto py-8 space-y-10 min-h-screen">
+
+    {/* Header Section */}
+    <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+
+      {/* Title */}
       <div className="space-y-1 text-center md:text-left">
-        <div className="flex items-center justify-center md:justify-start gap-2 text-primary mb-1">
+        <div className="flex items-center justify-center md:justify-start gap-2 text-primary">
           <HistoryIcon size={18} />
-          <span className="text-xs font-bold uppercase tracking-widest opacity-70">Activity Log</span>
+          <span className="text-xs font-bold uppercase tracking-widest opacity-70">
+            Activity Log
+          </span>
         </div>
-        <h1 className="text-4xl font-extrabold tracking-tight">History</h1>
-        <p className="text-muted-foreground text-sm">
-          Showing records for <span className="font-medium text-foreground">{startDate}</span> to <span className="font-medium text-foreground">{endDate}</span>
-        </p>
+        <h1 className="text-4xl font-extrabold tracking-tight">
+          Transaction History
+        </h1>
       </div>
 
-      <div className="flex items-center gap-3 bg-card border p-2 rounded-2xl shadow-sm">
-        <DatePicker />
+      {/* Controls */}
+      <div className="flex items-center gap-3  rounded-xl shadow-sm">
+
+        <div className="h-10 flex items-center">
+          <DatePicker />
+        </div>
+
         <Separator orientation="vertical" className="h-8" />
-        <Button variant="ghost" size="sm" className="rounded-xl font-bold gap-2 text-primary hover:text-primary hover:bg-primary/10">
-          <FileDown size={18} />
+
+        <Button
+          variant="ghost"
+          className="h-10 px-4 rounded-lg border bg-card font-semibold gap-2 text-primary hover:bg-primary/10"
+        >
+          <FileDown size={16} />
           <span className="hidden sm:inline">Export PDF</span>
         </Button>
+
       </div>
     </div>
 
-    {/* Table Section: Removed side padding so borders hit the 80% mark */}
-    <div className="rounded-xl border bg-card shadow-sm overflow-hidden mx-0">
-      {/* <DataTable columns={columns} data={allTransactions as ""} /> */}
+    {/* Table Section */}
+    <div className="rounded-xl border bg-card shadow-sm overflow-hidden">
+      <DataTable columns={columns} data={allTransactions as any} />
     </div>
+
   </div>
 );
+
 }
